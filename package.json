@@ -1,0 +1,39 @@
+{
+  "name": "services-auth",
+  "version": "0.16.1122",
+  "description": "LabShare Services plugin for authentication",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LabShare/services-auth.git"
+  },
+  "private": true,
+  "keywords": [
+    "LabShare",
+    "Services",
+    "Auth"
+  ],
+  "author": "",
+  "contributors": "https://github.com/LabShare/services-auth/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LabShare/services-auth/issues"
+  },
+  "homepage": "https://github.com/LabShare/services-auth#readme",
+  "dependencies": {
+    "lodash": "^4.17.2",
+    "restler": "^3.4.0",
+    "revalidator": "^0.3.1"
+  },
+  "devDependencies": {
+    "express": "^4.14.0",
+    "jasmine": "^2.5.2",
+    "nock": "^8.2.1",
+    "proxyquire": "^1.7.10",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2"
+  }
+}
