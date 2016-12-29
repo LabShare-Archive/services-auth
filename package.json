@@ -1,6 +1,6 @@
 {
   "name": "services-auth",
-  "version": "0.16.1209",
+  "version": "0.16.1229",
   "description": "LabShare Services plugin for role-based API route authentication",
   "main": "./",
   "scripts": {
@@ -30,6 +30,7 @@
     "revalidator": "^0.3.1"
   },
   "devDependencies": {
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
