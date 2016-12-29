@@ -21,4 +21,4 @@ services.start();
 2. Run `npm install` in the root directory of `services-auth`.
 
 ## Tests
-Use `npm test` to run `service-auth`'s unit tests using Jasmine.
+`npm test`
