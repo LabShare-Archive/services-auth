@@ -2,6 +2,7 @@
 
 const proxyquire = require('proxyquire'),
     express = require('express'),
+    cookieParser = require('cookie-parser'),
     supertest = require('supertest-as-promised');
 
 describe('restrict', () => {
@@ -33,6 +34,7 @@ describe('restrict', () => {
         };
 
         app = express();
+        app.use(cookieParser());
         request = supertest(app);
 
         restrict = proxyquire('../../../lib/restrict', {
@@ -56,11 +58,13 @@ describe('restrict', () => {
 
     describe('when the route is authenticated', () => {
 
-        it('stores the user data on the request and session if authentication succeeds', done => {
+        beforeEach(() => {
             authUserMock.and.callFake((token, authUrl, cb) => {
                 cb(null, userData);
             });
+        });
 
+        it('stores the user data on the request and session if authentication succeeds', done => {
             function addMockSession(req, res, next) {
                 req.session = {};
                 next();
@@ -84,6 +88,18 @@ describe('restrict', () => {
                 }).catch(done.fail);
         });
 
+        it('uses an auth token cookie if it exists', done => {
+            app.get('/test', restrict(route, authUrl), successMiddleware);
+
+            request
+                .get('/test')
+                .set('Cookie', `authToken=${fakeAuthToken}`)
+                .then(() => {
+                    expect(authUserMock).toHaveBeenCalledWith(fakeAuthToken, authUrl, jasmine.any(Function));
+                    done();
+                }).catch(done.fail);
+        });
+
         it('responds with an error status if user authentication fails', done => {
             authUserMock.and.callFake((token, authUrl, cb) => {
                 cb(new Error('auth error'));
@@ -99,7 +115,7 @@ describe('restrict', () => {
 
         it('fails if there was an invalid response', done => {
             let authError = new Error('invalid response');
-            authError.code = 'INVALID_RESPONSE';
+            authError.name = 'INVALID_PROFILE';
 
             authUserMock.and.callFake((token, authUrl, cb) => {
                 cb(authError);

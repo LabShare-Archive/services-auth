@@ -28,7 +28,7 @@ describe('Auth User', () => {
 
     it('fails if the token is missing or empty', done => {
         authUser('', authUrl, error => {
-            expect(error.message).toMatch(/Invalid token/i);
+            expect(error.message).toMatch(/token is required/i);
             done();
         });
     });
