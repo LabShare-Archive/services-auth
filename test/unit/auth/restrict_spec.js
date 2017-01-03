@@ -12,14 +12,16 @@ describe('restrict', () => {
         authUrl,
         route,
         app,
-        fakeAuthToken,
+        authToken,
+        refreshToken,
         request,
         successMiddleware,
         userData;
 
     beforeEach(() => {
         authUrl = 'https://some.auth.endpoint/auth/me';
-        fakeAuthToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
+        authToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
+        refreshToken = 'abowaefbawofbwaoefubaweofwwagwb';
         route = {
             accessLevel: 'admin'
         };
@@ -48,7 +50,7 @@ describe('restrict', () => {
         }).toThrow();
 
         expect(() => {
-            restrict(fakeAuthToken, null);
+            restrict(authToken, null);
         }).toThrow();
 
         expect(() => {
@@ -59,7 +61,7 @@ describe('restrict', () => {
     describe('when the route is authenticated', () => {
 
         beforeEach(() => {
-            authUserMock.and.callFake((token, authUrl, cb) => {
+            authUserMock.and.callFake(({authToken, refreshToken, authUrl}, cb) => {
                 cb(null, userData);
             });
         });
@@ -81,9 +83,10 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
+                .set('refresh-token', refreshToken)
                 .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith(fakeAuthToken, authUrl, jasmine.any(Function));
+                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken, authUrl}, jasmine.any(Function));
                     done();
                 }).catch(done.fail);
         });
@@ -93,15 +96,15 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('Cookie', `authToken=${fakeAuthToken}`)
+                .set('Cookie', `authToken=${authToken}`)
                 .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith(fakeAuthToken, authUrl, jasmine.any(Function));
+                    expect(authUserMock).toHaveBeenCalledWith({authToken, authUrl, refreshToken: ''}, jasmine.any(Function));
                     done();
                 }).catch(done.fail);
         });
 
         it('responds with an error status if user authentication fails', done => {
-            authUserMock.and.callFake((token, authUrl, cb) => {
+            authUserMock.and.callFake(({}, cb) => {
                 cb(new Error('auth error'));
             });
 
@@ -109,7 +112,7 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
                 .expect(401, done);
         });
 
@@ -117,7 +120,7 @@ describe('restrict', () => {
             let authError = new Error('invalid response');
             authError.name = 'INVALID_PROFILE';
 
-            authUserMock.and.callFake((token, authUrl, cb) => {
+            authUserMock.and.callFake(({}, cb) => {
                 cb(authError);
             });
 
@@ -125,7 +128,7 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
                 .expect(401)
                 .then(data => {
                     expect(data.body.error).toBe('invalid response');
@@ -160,7 +163,7 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
                 .expect(200)
                 .then(() => {
                     expect(authUserMock).not.toHaveBeenCalled();
@@ -176,7 +179,7 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
                 .expect(200)
                 .then(() => {
                     expect(authUserMock).not.toHaveBeenCalled();
@@ -197,7 +200,7 @@ describe('restrict', () => {
 
             request
                 .get('/test')
-                .set('auth-token', fakeAuthToken)
+                .set('auth-token', authToken)
                 .expect(200)
                 .then(() => {
                     expect(authUserMock).not.toHaveBeenCalled();
