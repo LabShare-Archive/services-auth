@@ -2,7 +2,7 @@
 
 const proxyquire = require('proxyquire'),
     express = require('express'),
-    supertest = require('supertest-as-promised');
+    supertest = require('supertest');
 
 describe('ensureAuthorized', () => {
 
@@ -39,7 +39,7 @@ describe('ensureAuthorized', () => {
         app = express();
         request = supertest(app);
 
-        ensureAuthorized = require('../../../lib/ensure-authorized');
+        ensureAuthorized = require('../../../lib/route-ensure-authorized');
     });
 
     it('throws with invalid arguments', () => {

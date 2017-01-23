@@ -3,7 +3,7 @@
 const proxyquire = require('proxyquire'),
     express = require('express'),
     cookieParser = require('cookie-parser'),
-    supertest = require('supertest-as-promised');
+    supertest = require('supertest');
 
 describe('restrict', () => {
 
@@ -39,7 +39,7 @@ describe('restrict', () => {
         app.use(cookieParser());
         request = supertest(app);
 
-        restrict = proxyquire('../../../lib/restrict', {
+        restrict = proxyquire('../../../lib/restrict-route', {
             './user': authUserMock
         });
     });
@@ -118,7 +118,7 @@ describe('restrict', () => {
 
         it('fails if there was an invalid response', done => {
             let authError = new Error('invalid response');
-            authError.name = 'INVALID_PROFILE';
+            authError.type = 'InvalidProfileError';
 
             authUserMock.and.callFake(({}, cb) => {
                 cb(authError);

@@ -8,7 +8,7 @@ const {Services} = require('services'),
     
 let services = new Services(/* options */);
 
-// Add role-based route authentication and authorization to LabShare Service routes
+// Add role-based route authentication and authorization to LabShare Service routes and sockets
 services.config(servicesAuth({
     authUrl: 'https://some.auth.endpoint.org/_api/auth/me'
 }));
