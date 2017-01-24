@@ -2,13 +2,21 @@
 
 `services-auth` is a plugin for [LabShare Services](https://github.com/LabShare/services).
 
+## Install
+
+```sh
+npm i services-auth --save
+```
+
+## Usage
+
 ```js
-const {Services} = require('services'),
+const {Services} = require('@labshare/services'),
     servicesAuth = require('services-auth');
     
 let services = new Services(/* options */);
 
-// Add role-based route authentication and authorization to LabShare Service routes
+// Add role-based route authentication and authorization to LabShare Service routes and sockets
 services.config(servicesAuth({
     authUrl: 'https://some.auth.endpoint.org/_api/auth/me'
 }));
