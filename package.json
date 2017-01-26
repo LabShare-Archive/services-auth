@@ -1,7 +1,7 @@
 {
   "name": "services-auth",
   "version": "0.17.0125",
-  "description": "LabShare Services plugin for role-based API route authentication",
+  "description": "LabShare Services plugin for role-based route and socket authentication",
   "main": "./",
   "scripts": {
     "test": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
