@@ -1,6 +1,6 @@
 {
   "name": "services-auth",
-  "version": "0.17.101",
+  "version": "0.17.0125",
   "description": "LabShare Services plugin for role-based API route authentication",
   "main": "./",
   "scripts": {
@@ -30,13 +30,15 @@
     "revalidator": "^0.3.1"
   },
   "devDependencies": {
+    "@labshare/services": "git+https://github.com/Labshare/services.git",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
     "nock": "^8.2.1",
+    "portfinder": "^1.0.12",
     "proxyquire": "^1.7.10",
-    "supertest": "^2.0.1",
-    "supertest-as-promised": "^4.0.2"
+    "socket.io-client": "^1.7.2",
+    "supertest": "^2.0.1"
   }
 }
