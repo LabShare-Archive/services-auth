@@ -107,7 +107,10 @@ describe('Services-Auth', () => {
                     morgan: {
                         enable: false
                     },
-                    connections: []
+                    socket:{
+                        connections: []
+                    }
+
                 });
 
                 servicesAuth = require('../../../lib/index');
