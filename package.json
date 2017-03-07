@@ -1,5 +1,5 @@
 {
-  "name": "services-auth",
+  "name": "@labshare/services-auth",
   "version": "0.17.0125",
   "description": "LabShare Services plugin for role-based route and socket authentication",
   "main": "./",
