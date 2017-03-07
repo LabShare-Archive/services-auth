@@ -1,18 +1,18 @@
 # Services Auth
 
-`services-auth` is a plugin for [LabShare Services](https://github.com/LabShare/services).
+`@labshare/services-auth` is a plugin for [@labshare/services](https://github.com/LabShare/services).
 
 ## Install
 
 ```sh
-npm i services-auth --save
+npm i @labshare/services-auth --save
 ```
 
 ## Usage
 
 ```js
 const {Services} = require('@labshare/services'),
-    servicesAuth = require('services-auth');
+    servicesAuth = require('@labshare/services-auth');
     
 let services = new Services(/* options */);
 
