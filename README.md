@@ -1,6 +1,6 @@
 # Services Auth
 
-`@labshare/services-auth` is a plugin for [@labshare/services](https://github.com/LabShare/services).
+`@labshare/services-auth` is a plugin for [@labshare/services](https://www.npmjs.com/package/@labshare/services).
 
 ## Install
 
