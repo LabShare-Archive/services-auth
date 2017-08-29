@@ -1,6 +1,6 @@
 {
   "name": "@labshare/services-auth",
-  "version": "0.17.0125",
+  "version": "1.17.328",
   "description": "LabShare Services plugin for role-based route and socket authentication",
   "main": "./",
   "scripts": {
