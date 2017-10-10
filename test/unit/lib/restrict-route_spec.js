@@ -1,14 +1,13 @@
 'use strict';
 
-const proxyquire = require('proxyquire'),
-    express = require('express'),
+const express = require('express'),
+    restrict = require('../../../lib/restrict-route'),
     cookieParser = require('cookie-parser'),
     supertest = require('supertest');
 
 describe('restrict', () => {
 
-    let restrict,
-        authUserMock,
+    let authUserMock,
         authUrl,
         route,
         app,
@@ -38,30 +37,22 @@ describe('restrict', () => {
         app = express();
         app.use(cookieParser());
         request = supertest(app);
-
-        restrict = proxyquire('../../../lib/restrict-route', {
-            './user': authUserMock
-        });
     });
 
     it('throws with invalid arguments', () => {
         expect(() => {
-            restrict(null, null);
+            restrict({route: null, getUser: null});
         }).toThrow();
 
         expect(() => {
-            restrict(authToken, null);
-        }).toThrow();
-
-        expect(() => {
-            restrict(null, authUrl);
+            restrict({route: null, getUser: authUserMock});
         }).toThrow();
     });
 
     describe('when the route is authenticated', () => {
 
         beforeEach(() => {
-            authUserMock.and.callFake(({authToken, refreshToken, authUrl}, cb) => {
+            authUserMock.and.callFake(({authToken, refreshToken}, cb) => {
                 cb(null, userData);
             });
         });
@@ -79,26 +70,26 @@ describe('restrict', () => {
                 res.sendStatus(200);
             }
 
-            app.get('/test', addMockSession, restrict(route, authUrl), checkRequest);
+            app.get('/test', addMockSession, restrict({route, getUser: authUserMock}), checkRequest);
 
             request
                 .get('/test')
                 .set('auth-token', authToken)
                 .set('refresh-token', refreshToken)
                 .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken, authUrl}, jasmine.any(Function));
+                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken}, jasmine.any(Function));
                     done();
                 }).catch(done.fail);
         });
 
         it('uses an auth token cookie if it exists', done => {
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
                 .set('Cookie', `authToken=${authToken}`)
                 .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith({authToken, authUrl, refreshToken: ''}, jasmine.any(Function));
+                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken: ''}, jasmine.any(Function));
                     done();
                 }).catch(done.fail);
         });
@@ -108,7 +99,7 @@ describe('restrict', () => {
                 cb(new Error('auth error'));
             });
 
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
@@ -124,7 +115,7 @@ describe('restrict', () => {
                 cb(authError);
             });
 
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
@@ -144,7 +135,7 @@ describe('restrict', () => {
         it('does not authenticate if the headers do not contain an auth token', done => {
             route.accessLevel = 'admin';
 
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
@@ -159,7 +150,7 @@ describe('restrict', () => {
         it('does not authenticate if the route does not have an accessLevel check', done => {
             route.accessLevel = undefined;
 
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
@@ -175,7 +166,7 @@ describe('restrict', () => {
         it('does not authenticate if the route has a public accessLevel', done => {
             route.accessLevel = 'public';
 
-            app.get('/test', restrict(route, authUrl), successMiddleware);
+            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
@@ -196,7 +187,7 @@ describe('restrict', () => {
 
             route.accessLevel = 'admin';
 
-            app.get('/test', auth, restrict(route, authUrl), successMiddleware);
+            app.get('/test', auth, restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')

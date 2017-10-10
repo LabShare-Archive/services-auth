@@ -24,12 +24,12 @@ describe('Auth User', () => {
 
     it('throws with invalid arguments', () => {
         expect(() => {
-            authUser(token, null);
+            authUser({authUrl: null});
         }).toThrow();
     });
 
     it('fails if the token is missing or empty', done => {
-        authUser({authToken: '', authUrl}, error => {
+        authUser({authUrl})({authToken: ''}, error => {
             expect(error.message).toMatch(/authToken is required/i);
             done();
         });
@@ -47,7 +47,7 @@ describe('Auth User', () => {
             return userData;
         });
 
-        authUser({authToken: token, refreshToken, authUrl}, (error, data) => {
+        authUser({authUrl})({authToken: token, refreshToken}, (error, data) => {
             expect(error).toBeNull();
             expect(data).toEqual(userData);
             done();
@@ -62,7 +62,7 @@ describe('Auth User', () => {
 
         request.reply(200, userData);
 
-        authUser({authToken: token, authUrl}, (error, data) => {
+        authUser({authUrl})({authToken: token}, (error, data) => {
             expect(error.message).toContain('invalid');
             expect(data).toBeUndefined();
             done();
@@ -72,7 +72,7 @@ describe('Auth User', () => {
     it('fails if the response status is not 200', done => {
         request.reply(500, {});
 
-        authUser({authToken: token, authUrl}, (error, data) => {
+        authUser({authUrl})({authToken: token}, (error, data) => {
             expect(error).toBe(500);
             expect(data).toBeUndefined();
             done();
