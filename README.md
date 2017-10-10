@@ -24,6 +24,11 @@ services.config(servicesAuth({
 services.start();
 ```
 
+## Options
+
+ * `authUrl` (`String`) - A GET endpoint that retreives a user data object with a `role` property. Optional if `getUser` is provided.
+ * `getUser` (`Function`) - A custom function for obtaining the user data. The signature is `({authToken: string, refreshToken: string}, callback: (error: Error, user) => void): void`.
+
 ## Development
 1. Install Node.js 6+
 2. Run `npm install` in the root directory of `services-auth`.
