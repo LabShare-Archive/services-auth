@@ -1,6 +1,6 @@
 {
   "name": "@labshare/services-auth",
-  "version": "1.17.1010",
+  "version": "1.17.0103",
   "description": "LabShare Services plugin for role-based route and socket authentication",
   "main": "./",
   "scripts": {
@@ -36,7 +36,6 @@
     "jasmine": "^2.5.2",
     "nock": "^8.2.1",
     "portfinder": "^1.0.12",
-    "proxyquire": "^1.7.10",
     "socket.io-client": "^2.0.3",
     "supertest": "^3.0.0"
   }

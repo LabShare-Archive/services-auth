@@ -1,30 +1,26 @@
 'use strict';
 
-const proxyquire = require('proxyquire'),
-    express = require('express'),
+const express = require('express'),
     supertest = require('supertest');
 
 describe('ensureAuthorized', () => {
 
-    let ensureAuthorized,
-        route,
-        user,
-        app,
-        fakeAuthToken,
-        request,
-        successMiddleware,
-        userAuthMiddleware,
-        userProfile;
-
-    beforeEach(() => {
-        fakeAuthToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
+    const fakeAuthToken = 'asca3obt20tb302tbwktblwekblqtbeltq',
+        userProfile = {
+            role: 'admin'
+        },
         route = {
             accessLevel: 'admin'
         };
-        userProfile = {
-            role: 'admin'
-        };
 
+    let ensureAuthorized,
+        user,
+        app,
+        request,
+        successMiddleware,
+        userAuthMiddleware;
+
+    beforeEach(() => {
         successMiddleware = (req, res) => {
             res.sendStatus(200);
         };
@@ -49,12 +45,12 @@ describe('ensureAuthorized', () => {
     });
 
     it('allows users to access routes that match their role', done => {
-        route = {
-            accessLevel: 'public'
-        };
-        user = {
-            role: 'public'
-        };
+        const route = {
+                accessLevel: 'public'
+            },
+            user = {
+                role: 'public'
+            };
 
         app.get('/test', userAuthMiddleware(user), ensureAuthorized(route), successMiddleware);
 
@@ -65,12 +61,12 @@ describe('ensureAuthorized', () => {
     });
 
     it('prevents users from accessing routes that do not match their role', done => {
-        route = {
-            accessLevel: 'admin'
-        };
-        user = {
-            role: 'public'
-        };
+        const route = {
+                accessLevel: 'admin'
+            },
+            user = {
+                role: 'public'
+            };
 
         app.get('/test', userAuthMiddleware(user), ensureAuthorized(route), successMiddleware);
 
@@ -81,10 +77,22 @@ describe('ensureAuthorized', () => {
     });
 
     it('defaults to accessLevel "public" if a route does not define an "accessLevel"', done => {
-        route = {};
-        user = {
-            role: 'user'
-        };
+        const route = {},
+            user = {
+                role: 'user'
+            };
+
+        app.get('/test', userAuthMiddleware(user), ensureAuthorized(route), successMiddleware);
+
+        request
+            .get('/test')
+            .set('auth-token', fakeAuthToken)
+            .expect(200, done);
+    });
+
+    it('defaults to role "public" if the user does not have a role attribute', done => {
+        const route = {},
+            user = {};
 
         app.get('/test', userAuthMiddleware(user), ensureAuthorized(route), successMiddleware);
 
