@@ -1,6 +1,7 @@
 # Services Auth
 
-`@labshare/services-auth` is a plugin for [@labshare/services](https://www.npmjs.com/package/@labshare/services).
+`@labshare/services-auth` is a plugin that integrates with [@labshare/services](https://www.npmjs.com/package/@labshare/services) to
+provide Socket.io and Express.js API Resource Scope authorization with RS256 JWT validation.
 
 ## Install
 
@@ -8,26 +9,55 @@
 npm i @labshare/services-auth --save
 ```
 
+## Options
+
+ * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`
+ * `getUser` (`Function`) - A custom function for obtaining the user data. The signature is `({authToken: string, refreshToken: string}, callback: (error: Error, user) => void): void`.
+ * `organization` (`String`) - The LabShare Auth organization ID the API service is registered to.
+ * `audience` (`String`) - The API service's identifier registered to the LabShare Auth service. This is used for JWT `audience` validation.
+ * `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
+
 ## Usage
 
+This example demonstrates scope-based authorization for an HTTP API module using `@labshare/services` to load the route definition.
+With the configuration below, only JWTs containing an audience of `https://my.api.identifier/resource` and a `read:users` scope
+would be allowed to access the API route. Additionally, the JWT would be validated using the JSON Web Key Set of the specified organization.
+
 ```js
+// api/users.js
+
+module.exports = {
+    routes: [
+        {
+            path: '/users',
+            httpMethod: 'GET',
+            middleware: getUsers,
+            scope: [
+                'read:users'
+            ]
+        }
+    ]
+}
+```
+
+```js
+// lib/index.js
+
 const {Services} = require('@labshare/services'),
     servicesAuth = require('@labshare/services-auth');
-    
-let services = new Services(/* options */);
 
-// Add role-based route authentication and authorization to LabShare Service routes and sockets
+const services = new Services(/* options */);
+
+// Adds scope-based route authentication and authorization to LabShare Service routes and sockets
 services.config(servicesAuth({
-    authUrl: 'https://some.auth.endpoint.org/_api/auth/me'
+    authUrl: 'https://ls.auth.io/_api',
+    audience: 'https://my.api.identifier/resource',
+    issuer: 'LabShare Auth',
+    organization: 'my-org'
 }));
 
 services.start();
 ```
-
-## Options
-
- * `authUrl` (`String`) - A GET endpoint that retreives a user data object with a `role` property. Optional if `getUser` is provided.
- * `getUser` (`Function`) - A custom function for obtaining the user data. The signature is `({authToken: string, refreshToken: string}, callback: (error: Error, user) => void): void`.
 
 ## Development
 1. Install Node.js 6+

@@ -1,7 +1,7 @@
 {
   "name": "@labshare/services-auth",
-  "version": "1.17.0103",
-  "description": "LabShare Services plugin for role-based route and socket authentication",
+  "version": "1.18.0116",
+  "description": "LabShare Services plugin for resource scope-based HTTP route and socket authorization",
   "main": "./",
   "scripts": {
     "test": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
@@ -24,6 +24,9 @@
   },
   "homepage": "https://github.com/LabShare/services-auth#readme",
   "dependencies": {
+    "express-jwt": "^5.3.0",
+    "express-jwt-authz": "^1.0.0",
+    "jwks-rsa": "^1.2.1",
     "lodash": "^4.17.2",
     "restler": "^3.4.0",
     "revalidator": "^0.3.1"
