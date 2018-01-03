@@ -57,31 +57,6 @@ describe('restrict', () => {
             });
         });
 
-        it('stores the user data on the request and session if authentication succeeds', done => {
-            function addMockSession(req, res, next) {
-                req.session = {};
-                next();
-            }
-
-            function checkRequest(req, res) {
-                expect(req.user).toEqual(userData);
-                expect(req.session.user).toEqual(userData);
-
-                res.sendStatus(200);
-            }
-
-            app.get('/test', addMockSession, restrict({route, getUser: authUserMock}), checkRequest);
-
-            request
-                .get('/test')
-                .set('auth-token', authToken)
-                .set('refresh-token', refreshToken)
-                .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken}, jasmine.any(Function));
-                    done();
-                }).catch(done.fail);
-        });
-
         it('uses an auth token cookie if it exists', done => {
             app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 
