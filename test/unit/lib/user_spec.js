@@ -1,21 +1,18 @@
 'use strict';
 
-const nock = require('nock');
+const nock = require('nock'),
+    authUser = require('../../../lib/user');
 
 describe('Auth User', () => {
 
-    let authUser,
-        authUrl,
-        request,
-        refreshToken,
-        token;
+    const token = 'awefn9wf30qfnqpfnkqwfqpfn',
+        refreshToken = 'awebfoawbfwobf3wbo',
+        authUrl = 'https://a.labshare.org/_api';
+
+    let request;
 
     beforeEach(() => {
-        token = 'awefn9wf30qfnqpfnkqwfqpfn';
-        refreshToken = 'awebfoawbfwobf3wbo';
-        authUrl = 'https://a.labshare.org/_api/auth/me';
         request = nock('https://a.labshare.org').get('/_api/auth/me');
-        authUser = require('../../../lib/user');
     });
 
     afterEach(() => {
@@ -55,7 +52,7 @@ describe('Auth User', () => {
     });
 
     it('fails if the auth response has an invalid format', done => {
-        let userData = {
+        const userData = {
             username: null,
             email: 'notAnEmail'
         };
