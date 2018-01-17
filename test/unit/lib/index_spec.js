@@ -33,16 +33,15 @@ function getProfile(authToken) {
 
 describe('Services-Auth', () => {
 
+    const packagesPath = './test/fixtures/main-package',
+        apiPackage1Prefix = '/socket-api-package-1-namespace';
+
     let authServerUrl,
         authServer,
-        packagesPath,
-        apiPackage1Prefix,
         authServerPort,
         app;
 
     beforeEach(done => {
-        packagesPath = './test/fixtures/main-package';
-        apiPackage1Prefix = '/socket-api-package-1-namespace';
         app = express();
 
         app.get('/auth/me', (req, res) => {
@@ -58,8 +57,9 @@ describe('Services-Auth', () => {
             }
 
             authServerPort = unusedPort;
-            authServerUrl = `http://localhost:${authServerPort}/auth/me`;
+            authServerUrl = `http://localhost:${authServerPort}`;
             authServer = http.createServer(app).listen(unusedPort);
+
             done();
         });
     });

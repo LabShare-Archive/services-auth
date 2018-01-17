@@ -5,16 +5,9 @@ const express = require('express'),
 
 describe('ensureAuthorized', () => {
 
-    const fakeAuthToken = 'asca3obt20tb302tbwktblwekblqtbeltq',
-        userProfile = {
-            role: 'admin'
-        },
-        route = {
-            accessLevel: 'admin'
-        };
+    const fakeAuthToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
 
     let ensureAuthorized,
-        user,
         app,
         request,
         successMiddleware,

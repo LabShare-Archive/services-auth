@@ -7,20 +7,16 @@ const express = require('express'),
 
 describe('restrict', () => {
 
+    const authToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
+
     let authUserMock,
-        authUrl,
         route,
         app,
-        authToken,
-        refreshToken,
         request,
         successMiddleware,
         userData;
 
     beforeEach(() => {
-        authUrl = 'https://some.auth.endpoint/auth/me';
-        authToken = 'asca3obt20tb302tbwktblwekblqtbeltq';
-        refreshToken = 'abowaefbawofbwaoefubaweofwwagwb';
         route = {
             accessLevel: 'admin'
         };
