@@ -1,6 +1,6 @@
 {
   "name": "@labshare/services-auth",
-  "version": "1.18.0116",
+  "version": "1.18.0130",
   "description": "LabShare Services plugin for resource scope-based HTTP route and socket authorization",
   "main": "./",
   "scripts": {
@@ -29,7 +29,8 @@
     "express-jwt-authz": "^1.0.0",
     "jwks-rsa": "^1.2.1",
     "lodash": "^4.17.2",
-    "restler": "^3.4.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "revalidator": "^0.3.1"
   },
   "devDependencies": {
