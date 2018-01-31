@@ -16,7 +16,7 @@ npm i @labshare/services-auth --save
  * `audience` (`String`) - The API service's identifier registered to the LabShare Auth service. This is used for JWT `audience` validation.
  * `getUser` (`Function`) - An optional, custom function for obtaining the user data. The signature is `({authToken: string, refreshToken: string}, callback: (error: Error, user) => void): void`.
  * `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
- * `secretProvider` (`Function`) - An optional, custom function for obtaining the JWK. The signature is `(req, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
+ * `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
 
 ## Usage
 
