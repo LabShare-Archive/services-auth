@@ -40,7 +40,9 @@
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
     "nock": "^8.2.1",
+    "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.12",
+    "selfsigned": "^1.10.2",
     "socket.io-client": "^2.0.3",
     "supertest": "^3.0.0"
   }
