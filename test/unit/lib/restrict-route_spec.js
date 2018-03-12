@@ -134,31 +134,10 @@ describe('restrict', () => {
                 .catch(done.fail);
         });
 
-        it('does not authenticate if the route has a public accessLevel', done => {
+        it('does not check authorization if the route has a public accessLevel', done => {
             route.accessLevel = 'public';
 
             app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
-
-            request
-                .get('/test')
-                .set('auth-token', authToken)
-                .expect(200)
-                .then(() => {
-                    expect(authUserMock).not.toHaveBeenCalled();
-                    done();
-                })
-                .catch(done.fail);
-        });
-
-        it('does not authenticate if the user is already authenticated', done => {
-            function auth(req, res, next) {
-                req.user = {};
-                next();
-            }
-
-            route.accessLevel = 'admin';
-
-            app.get('/test', auth, restrict({route, getUser: authUserMock}), successMiddleware);
 
             request
                 .get('/test')
