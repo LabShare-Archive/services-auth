@@ -193,6 +193,16 @@ describe('Services-Auth', () => {
                     .catch(done.fail);
             });
 
+            it('requires an Authorization Bearer token in the request headers', (done) => {
+                request.post('/api-package-1-namespace/books')
+                    .expect(401)
+                    .then((res) => {
+                        expect(res.text).toBe('No authorization token was found');
+                        done();
+                    })
+                    .catch(done.fail);
+            });
+
             it('checks if the user is authorized with socket messages', done => {
                 const token = createToken(1, 'read:books');
 
