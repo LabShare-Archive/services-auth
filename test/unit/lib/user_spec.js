@@ -6,7 +6,6 @@ const nock = require('nock'),
 describe('Auth User', () => {
 
     const token = 'awefn9wf30qfnqpfnkqwfqpfn',
-        refreshToken = 'awebfoawbfwobf3wbo',
         authUrl = 'https://a.labshare.org/_api';
 
     let request;
@@ -27,7 +26,7 @@ describe('Auth User', () => {
 
     it('fails if the token is missing or empty', done => {
         authUser({authUrl})({authToken: ''}, error => {
-            expect(error.message).toMatch(/authToken is required/i);
+            expect(error.message).toMatch(/token is required/i);
             done();
         });
     });
@@ -39,12 +38,11 @@ describe('Auth User', () => {
         };
 
         request.reply(200, () => {
-            expect(request.req.headers['auth-token']).toBe(token);
-            expect(request.req.headers['refresh-token']).toBe(refreshToken);
+            expect(request.req.headers.authorization).toBe('Bearer ' + token);
             return userData;
         });
 
-        authUser({authUrl})({authToken: token, refreshToken}, (error, data) => {
+        authUser({authUrl})({authToken: token}, (error, data) => {
             expect(error).toBeNull();
             expect(data).toEqual(userData);
             done();

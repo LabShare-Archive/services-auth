@@ -48,7 +48,7 @@ describe('restrict', () => {
     describe('when the route is authenticated', () => {
 
         beforeEach(() => {
-            authUserMock.and.callFake(({authToken, refreshToken}, cb) => {
+            authUserMock.and.callFake(({authToken}, cb) => {
                 cb(null, userData);
             });
         });
@@ -60,7 +60,7 @@ describe('restrict', () => {
                 .get('/test')
                 .set('Cookie', `authToken=${authToken}`)
                 .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith({authToken, refreshToken: ''}, jasmine.any(Function));
+                    expect(authUserMock).toHaveBeenCalledWith({authToken}, jasmine.any(Function));
                     done();
                 }).catch(done.fail);
         });
@@ -120,22 +120,6 @@ describe('restrict', () => {
 
         it('does not authenticate if the route does not have an accessLevel check', done => {
             route.accessLevel = undefined;
-
-            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
-
-            request
-                .get('/test')
-                .set('auth-token', authToken)
-                .expect(200)
-                .then(() => {
-                    expect(authUserMock).not.toHaveBeenCalled();
-                    done();
-                })
-                .catch(done.fail);
-        });
-
-        it('does not check authorization if the route has a public accessLevel', done => {
-            route.accessLevel = 'public';
 
             app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
 

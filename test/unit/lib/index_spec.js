@@ -11,7 +11,7 @@ const express = require('express'),
     http = require('http'),
     selfsigned = require('selfsigned');
 
-function getRole(authToken) {
+function getUserName(authToken) {
     switch (jws.decode(authToken).sub) {
         case 1:
             return 'user';
@@ -20,17 +20,14 @@ function getRole(authToken) {
         case 3:
             return 'admin';
         default:
-            return {};
+            return 'smithj';
     }
 }
 
 function getProfile(authToken) {
-    let role = getRole(authToken);
-
     return {
-        role,
         email: 'test@gmail.com',
-        username: 'smithj'
+        username: getUserName(authToken)
     };
 }
 
@@ -39,6 +36,7 @@ describe('Services-Auth', () => {
     const packagesPath = './test/fixtures/main-package',
         apiPackage1Prefix = '/socket-api-package-1-namespace',
         organization = 'ls',
+        defaultAudience = 'https://my.api.id/v2',
         certificates = selfsigned.generate([
             {
                 name: 'commonName',
@@ -53,18 +51,20 @@ describe('Services-Auth', () => {
         authServerPort,
         app;
 
-    function createToken(sub, scope = '') {
+    function createToken(sub, scope = '', audience = defaultAudience) {
         return jws.sign({
             sub,
             jti: 123456,
             azp: 123,
-            audience: [],
             scope
         }, certificates.private, {
             algorithm: 'RS256',
             expiresIn: '10m',
             issuer: 'issuer',
-            keyid: '1'
+            keyid: '1',
+            audience: [
+                audience
+            ]
         });
     }
 
@@ -72,7 +72,7 @@ describe('Services-Auth', () => {
         app = express();
 
         app.get('/auth/me', (req, res) => {
-            const authToken = req.headers['auth-token'];
+            const authToken = req.headers.authorization.split(' ')[1];
 
             res.json(getProfile(authToken));
         });
@@ -122,9 +122,9 @@ describe('Services-Auth', () => {
         beforeEach(done => {
             const loggerMock = jasmine.createSpyObj('logger', ['error', 'info', 'warn']);
 
-            portfinder.getPort((err, unusedPort) => {
-                if (err) {
-                    done.fail(err);
+            portfinder.getPort((error, unusedPort) => {
+                if (error) {
+                    done.fail(error);
                     return;
                 }
 
@@ -160,7 +160,8 @@ describe('Services-Auth', () => {
             beforeEach(() => {
                 services.config(servicesAuth({
                     authUrl: authServerUrl,
-                    organization: 'ls'
+                    organization,
+                    audience: defaultAudience
                 }));
 
                 servicesServer = services.start();
@@ -173,7 +174,7 @@ describe('Services-Auth', () => {
                 const token = createToken(1, 'read:books');
 
                 request.get('/api-package-1-namespace/books')
-                    .set('auth-token', token)
+                    .set('Authorization', 'Bearer ' + token)
                     .expect('got books')
                     .then(() => {
                         done();
@@ -185,11 +186,21 @@ describe('Services-Auth', () => {
                 const token = createToken(1, 'read:books');
 
                 request.post('/api-package-1-namespace/books')
-                    .set('auth-token', token)
+                    .set('Authorization', 'Bearer ' + token)
                     .expect(401)
                     .then(() => {
                         done();
                     })
+                    .catch(done.fail);
+            });
+
+            it('requires the audience claim to match', (done) => {
+                const token = createToken(1, '', 'not-a-valid-audience');
+
+                request.post('/api-package-1-namespace/books')
+                    .set('Authorization', 'Bearer ' + token)
+                    .expect(401)
+                    .then(done)
                     .catch(done.fail);
             });
 
@@ -232,12 +243,13 @@ describe('Services-Auth', () => {
 
         });
 
-        describe('with legacy access level check', () => {
+        describe('with legacy authentication check', () => {
 
             beforeEach(() => {
                 services.config(servicesAuth({
                     authUrl: authServerUrl,
-                    organization: 'ls'
+                    organization,
+                    audience: defaultAudience
                 }));
 
                 servicesServer = services.start();
@@ -246,11 +258,11 @@ describe('Services-Auth', () => {
                 clientSocket = clientio.connect(socketAPIUrl);
             });
 
-            it('allows users with the appropriate role', done => {
+            it('allows authenticated users', done => {
                 const token = createToken(2);
 
                 request.get('/api-package-1-namespace/staff/task')
-                    .set('auth-token', token)
+                    .set('Authorization', 'Bearer ' + token)
                     .expect('staff task complete')
                     .then(() => {
                         done();
@@ -258,12 +270,12 @@ describe('Services-Auth', () => {
                     .catch(done.fail);
             });
 
-            it('blocks users without sufficient privileges', done => {
-                const token = createToken(1);
+            it(`fails if the audiences of the bearer token does not match any of the JWT's audiences`, (done) => {
+                const token = createToken(2, '', 'not-a-valid-audience');
 
-                request.get('/api-package-1-namespace/admin/task')
-                    .set('auth-token', token)
-                    .expect(403)
+                request.get('/api-package-1-namespace/staff/task')
+                    .set('Authorization', 'Bearer ' + token)
+                    .expect(401)
                     .then(() => {
                         done();
                     })
@@ -285,35 +297,24 @@ describe('Services-Auth', () => {
                 });
             });
 
-            it('fails to authorize user if they do not have the appropriate role', done => {
-                const token = createToken(1);
-
-                clientSocket.emit('admin.task', {token}, (error, message) => {
-                    expect(message).toBeUndefined();
-                    expect(error.message).toBe('Forbidden');
-                    expect(error.data.code).toBe(403);
-                    done();
-                });
-            });
-
-            it('allows complex interactions such as role-based channel notifications', done => {
+            it('allows complex interactions such as id-based channel notifications', (done) => {
                 const clientA = clientio.connect(socketAPIUrl),
                     clientB = clientio.connect(socketAPIUrl),
                     clientC = clientio.connect(socketAPIUrl),
                     clientD = clientio.connect(socketAPIUrl);
 
-                const userToken = createToken(1);
-                const staffToken = createToken(2);
-                const adminToken = createToken(3);
+                const staffUserToken = createToken(2);
+                const adminUserToken = createToken(3);
 
-                // Can't subscribe to notifications without the correct role
-                clientB.emit('subscribe:notifications', {token: userToken}, error => {
-                    expect(error.data.code).toBe(403);
+                // Can't subscribe to notifications without being authenticated
+                clientB.emit('subscribe:notifications', {token: null}, error => {
+                    expect(error.data.code).toBe(401);
 
                     clientB.disconnect();
                 });
 
-                clientD.emit('subscribe:notifications', {token: adminToken}, (error, message) => {
+                clientD.emit('subscribe:notifications', {token: adminUserToken}, (error, message) => {
+                    expect(error).toBeNull();
                     expect(message).toContain('Archived admin notification 1');
                 });
 
@@ -321,12 +322,12 @@ describe('Services-Auth', () => {
                     jasmine.fail('Admin user should not be in the staff channel!');
                 });
 
-                clientA.emit('subscribe:notifications', {token: staffToken}, (error, message) => {
+                clientA.emit('subscribe:notifications', {token: staffUserToken}, (error, message) => {
                     expect(message).toContain('Archived notification 1');
                 });
 
-                clientA.on('staff:notification', message => {
-                    expect(message).toContain('Something was processed by smithj');
+                clientA.on('staff:notification', (message) => {
+                    expect(message).toContain('Something was processed by staff!');
 
                     clientA.disconnect();
                     clientC.disconnect();
@@ -335,11 +336,11 @@ describe('Services-Auth', () => {
                     done();
                 });
 
-                clientC.emit('subscribe:notifications', {token: staffToken}, (error, message) => {
+                clientC.emit('subscribe:notifications', {token: staffUserToken}, (error, message) => {
                     expect(message).toContain('Archived notification 1');
 
                     // The resulting notification should be sent to everyone subscribed to the staff channel
-                    clientC.emit('process:something', (error, message) => {
+                    clientC.emit('process:something', {token: staffUserToken}, (error, message) => {
                         expect(error).toBeNull();
                         expect(message).toContain('processing finished');
                     });

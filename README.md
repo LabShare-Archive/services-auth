@@ -13,7 +13,7 @@ npm i @labshare/services-auth --save
 
  * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`. Required.
  * `organization` (`String`) - The LabShare Auth organization ID the API service is registered to. Required if `secretProvider` is not specified.
- * `audience` (`String`) - An optional API service identifier registered to the LabShare Auth service. This is used for JWT `audience` validation.
+ * `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
  * `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
  * `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
 
