@@ -53,18 +53,6 @@ describe('restrict', () => {
             });
         });
 
-        it('uses an auth token cookie if it exists', done => {
-            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
-
-            request
-                .get('/test')
-                .set('Cookie', `authToken=${authToken}`)
-                .then(() => {
-                    expect(authUserMock).toHaveBeenCalledWith({authToken}, jasmine.any(Function));
-                    done();
-                }).catch(done.fail);
-        });
-
         it('responds with an error status if user authentication fails', done => {
             authUserMock.and.callFake(({}, cb) => {
                 cb(new Error('auth error'));
@@ -99,11 +87,7 @@ describe('restrict', () => {
                 .catch(done.fail);
         });
 
-    });
-
-    describe('when the route is not authenticated', () => {
-
-        it('does not authenticate if the headers do not contain an auth token', done => {
+        it('authenticates even if the headers do not contain a bearer token', done => {
             route.accessLevel = 'admin';
 
             app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
@@ -112,23 +96,7 @@ describe('restrict', () => {
                 .get('/test')
                 .expect(200)
                 .then(() => {
-                    expect(authUserMock).not.toHaveBeenCalled();
-                    done();
-                })
-                .catch(done.fail);
-        });
-
-        it('does not authenticate if the route does not have an accessLevel check', done => {
-            route.accessLevel = undefined;
-
-            app.get('/test', restrict({route, getUser: authUserMock}), successMiddleware);
-
-            request
-                .get('/test')
-                .set('auth-token', authToken)
-                .expect(200)
-                .then(() => {
-                    expect(authUserMock).not.toHaveBeenCalled();
+                    expect(authUserMock).toHaveBeenCalled();
                     done();
                 })
                 .catch(done.fail);
