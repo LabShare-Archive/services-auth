@@ -1,5 +1,7 @@
 # Services Auth
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/LabShare/services-auth.svg)](https://greenkeeper.io/)
+
 `@labshare/services-auth` is a plugin that integrates with [@labshare/services](https://www.npmjs.com/package/@labshare/services) to
 provide Socket.io and Express.js API Resource Scope authorization with RS256 JWT validation.
 
