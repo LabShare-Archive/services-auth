@@ -7,5 +7,4 @@ install:
   - npm install
 script:
   - npm test
-  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then npm install -g codacy-coverage && npm run coverage && cat ./coverage/lcov.info | codacy-coverage && rm -rf ./coverage; fi
   - npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
