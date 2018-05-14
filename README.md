@@ -1,6 +1,7 @@
 # Services Auth
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/LabShare/services-auth.svg)](https://greenkeeper.io/)
+[![Coverage Status](https://coveralls.io/repos/github/LabShare/services-auth/badge.svg)](https://coveralls.io/github/LabShare/services-auth)
 
 `@labshare/services-auth` is a plugin that integrates with [@labshare/services](https://www.npmjs.com/package/@labshare/services) to
 provide Socket.io and Express.js API Resource Scope authorization with RS256 JWT validation.
