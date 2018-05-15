@@ -40,7 +40,7 @@
     "express": "^4.14.0",
     "istanbul": "^0.4.5",
     "jasmine": "^3.1.0",
-    "nock": "^9.2.5",
+    "nock": "^9.2.6",
     "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.12",
     "selfsigned": "^1.10.2",
