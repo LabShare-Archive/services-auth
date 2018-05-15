@@ -34,7 +34,7 @@
     "revalidator": "^0.3.1"
   },
   "devDependencies": {
-    "@labshare/services": "*",
+    "@labshare/services": ">=1.18.514",
     "cookie-parser": "^1.4.3",
     "coveralls": "^3.0.1",
     "express": "^4.14.0",
