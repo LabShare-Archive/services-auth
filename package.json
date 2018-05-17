@@ -44,7 +44,7 @@
     "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.12",
     "selfsigned": "^1.10.2",
-    "socket.io-client": "^2.0.3",
+    "socket.io-client": "2.1.0",
     "supertest": "^3.1.0"
   }
 }
