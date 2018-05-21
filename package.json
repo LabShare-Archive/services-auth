@@ -1,6 +1,6 @@
 {
   "name": "@labshare/services-auth",
-  "version": "1.18.514",
+  "version": "1.18.515",
   "description": "LabShare Services plugin for resource scope-based HTTP route and socket authorization",
   "main": "./",
   "scripts": {
