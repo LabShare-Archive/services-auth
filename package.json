@@ -34,10 +34,13 @@
     "revalidator": "^0.3.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^6.2.0",
+    "@commitlint/config-conventional": "^6.1.3",
     "@labshare/services": ">=1.18.514",
     "cookie-parser": "^1.4.3",
     "coveralls": "^3.0.1",
     "express": "^4.14.0",
+    "husky": "^0.14.3",
     "istanbul": "^0.4.5",
     "jasmine": "^3.1.0",
     "nock": "^9.2.6",
