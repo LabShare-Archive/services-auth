@@ -4,6 +4,7 @@
   "description": "LabShare Services plugin for resource scope-based HTTP route and socket authorization",
   "main": "./",
   "scripts": {
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "test": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
     "coverage": "istanbul cover jasmine JASMINE_CONFIG_PATH=./test/jasmine.json"
   },
