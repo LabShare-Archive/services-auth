@@ -2,4 +2,4 @@ test
 .npmignore
 .gitmodules
 *.md
-coverage
+coverage.coveralls.yml
