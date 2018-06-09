@@ -56,9 +56,6 @@
     "travis-deploy-once": "^5.0.0",
     "semantic-release": "^15.5.0"
   },
-  "publishConfig": {
-    "access": "restricted"
-  },
   "release": {
     "extends": "@labshare/semantic-release-config"
   }
