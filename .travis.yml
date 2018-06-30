@@ -7,9 +7,8 @@ before_install:
 script:
   - npm i -g codecov
   - npm test
-  - >-
-    npm run coverage
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+  - npm run coverage
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   - codecov
 cache:
   directories:
