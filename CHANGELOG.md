@@ -1,3 +1,11 @@
+# [1.20.0](https://github.com/LabShare/services-auth/compare/v1.19.0...v1.20.0) (2018-06-30)
+
+
+### Features
+
+* **npm:** integrate with semantic-release SHELL-1528 ([ed42ef2](https://github.com/LabShare/services-auth/commit/ed42ef2))
+* **npm:** use npm versioned labshare dependencies SHELL-1536 ([93cd0ad](https://github.com/LabShare/services-auth/commit/93cd0ad))
+
 <a name="1.19.0"></a>
 # [1.19.0](https://github.com/LabShare/services-auth/compare/v1.18.515...v1.19.0) (2018-05-22)
 
