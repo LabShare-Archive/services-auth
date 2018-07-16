@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/LabShare/services-auth/compare/v1.20.0...v2.0.0) (2018-07-16)
+
+
+### Features
+
+* rename "organization" configuration option to "tenant" AUTH-1217 ([13bd13d](https://github.com/LabShare/services-auth/commit/13bd13d))
+
+
+### BREAKING CHANGES
+
+* The "organization" configuration option is now "tenant".
+
 # [1.20.0](https://github.com/LabShare/services-auth/compare/v1.19.0...v1.20.0) (2018-06-30)
 
 
