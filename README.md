@@ -17,7 +17,8 @@ npm i @labshare/services-auth --save
 ## Options
 
  * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`. Required.
- * `organization` (`String`) - The LabShare Auth organization ID the API service is registered to. Required if `secretProvider` is not specified.
+ * `tenant` (`String`) - The LabShare Auth Tenant ID the API service is registered to. Required if
+ `secretProvider` is not specified.
  * `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
  * `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
  * `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
@@ -26,7 +27,8 @@ npm i @labshare/services-auth --save
 
 This example demonstrates scope-based authorization for an HTTP API module using `@labshare/services` to load the route definition.
 With the configuration below, only JWTs containing an audience of `https://my.api.identifier/resource` and a `read:users` scope
-would be allowed to access the API route. Additionally, the JWT would be validated using the JSON Web Key Set of the specified organization.
+would be allowed to access the API route. Additionally, the JWT would be validated using the JSON Web Key Set of the
+specified LabShare Auth Tenant.
 
 ```js
 // api/users.js
@@ -48,8 +50,8 @@ module.exports = {
 ```js
 // lib/index.js
 
-const {Services} = require('@labshare/services'),
-    servicesAuth = require('@labshare/services-auth');
+const {Services} = require('@labshare/services');
+const servicesAuth = require('@labshare/services-auth');
 
 const services = new Services(/* options */);
 
@@ -58,16 +60,18 @@ services.config(servicesAuth({
     authUrl: 'https://ls.auth.io/_api',
     audience: 'https://my.api.identifier/resource',
     issuer: 'LabShare Auth',
-    organization: 'my-org'
+    tenant: 'my-org'
 }));
 
 services.start();
 ```
 
 ## Development
-1. Install Node.js 6+
-2. Run `npm install` in the root directory of `services-auth`.
+
+1. Install Node.js >= 8.11.2
+2. `npm i`
 
 ## Tests
+
 `npm test`
 
