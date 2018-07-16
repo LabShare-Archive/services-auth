@@ -35,7 +35,7 @@ describe('Services-Auth', () => {
 
     const packagesPath = './test/fixtures/main-package',
         apiPackage1Prefix = '/socket-api-package-1-namespace',
-        organization = 'ls',
+        tenant = 'ls',
         defaultAudience = 'https://my.api.id/v2',
         certificates = selfsigned.generate([
             {
@@ -84,7 +84,7 @@ describe('Services-Auth', () => {
         jwk.kid = '1';
         jwk.use = 'sig';
 
-        app.get(`/auth/${organization}/.well-known/jwks.json`, (req, res) => {
+        app.get(`/auth/${tenant}/.well-known/jwks.json`, (req, res) => {
             res.json({
                 keys: [
                     jwk
@@ -160,7 +160,7 @@ describe('Services-Auth', () => {
             beforeEach(() => {
                 services.config(servicesAuth({
                     authUrl: authServerUrl,
-                    organization,
+                    tenant,
                     audience: defaultAudience
                 }));
 
@@ -248,7 +248,7 @@ describe('Services-Auth', () => {
             beforeEach(() => {
                 services.config(servicesAuth({
                     authUrl: authServerUrl,
-                    organization,
+                    tenant,
                     audience: defaultAudience
                 }));
 
