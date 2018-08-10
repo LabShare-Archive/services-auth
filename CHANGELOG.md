@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/LabShare/services-auth/compare/v2.0.0...v2.0.1) (2018-08-10)
+
+
+### Bug Fixes
+
+* **options:** use express-jwt fork to avoid TypeError AUTH-1286 ([bb21eec](https://github.com/LabShare/services-auth/commit/bb21eec))
+
 # [2.0.0](https://github.com/LabShare/services-auth/compare/v1.20.0...v2.0.0) (2018-07-16)
 
 
