@@ -60,7 +60,7 @@ services.config(servicesAuth({
     authUrl: 'https://ls.auth.io/_api',
     audience: 'https://my.api.identifier/resource',
     issuer: 'LabShare Auth',
-    tenant: 'my-org'
+    tenant: 'my-tenant'
 }));
 
 services.start();
