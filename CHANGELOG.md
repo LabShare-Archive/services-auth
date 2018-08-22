@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/LabShare/services-auth/compare/v2.0.2...v2.1.0) (2018-08-22)
+
+
+### Features
+
+* **api:** export generic RS256 middleware for Express.js AUTH-1315 ([20e4509](https://github.com/LabShare/services-auth/commit/20e4509))
+
 ## [2.0.2](https://github.com/LabShare/services-auth/compare/v2.0.1...v2.0.2) (2018-08-22)
 
 
