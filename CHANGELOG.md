@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/LabShare/services-auth/compare/v2.0.1...v2.0.2) (2018-08-22)
+
+
+### Bug Fixes
+
+* **options:** optional authUrl with custom secretProvider AUTH-1314 ([532bece](https://github.com/LabShare/services-auth/commit/532bece))
+
 ## [2.0.1](https://github.com/LabShare/services-auth/compare/v2.0.0...v2.0.1) (2018-08-10)
 
 
