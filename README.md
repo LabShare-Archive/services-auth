@@ -16,7 +16,8 @@ npm i @labshare/services-auth --save
 
 ## Options
 
- * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`. Required.
+ * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`.
+ Required if `secretProvider` is not specified.
  * `tenant` (`String`) - The LabShare Auth Tenant ID the API service is registered to. Required if
  `secretProvider` is not specified.
  * `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
