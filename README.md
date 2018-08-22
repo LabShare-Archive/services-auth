@@ -5,8 +5,8 @@
 
 # Services Auth
 
-`@labshare/services-auth` is a plugin that integrates with [@labshare/services](https://www.npmjs.com/package/@labshare/services) to
-provide Socket.io and Express.js API Resource Scope authorization with RS256 JWT validation.
+`@labshare/services-auth` is an Express.js middleware plugin that integrates with `Express.js` APIs to provide API
+Resource Scope authorization with RS256 JWT validation.
 
 ## Install
 
@@ -26,9 +26,11 @@ npm i @labshare/services-auth --save
 
 ## Usage
 
+### LabShare Services
+
 This example demonstrates scope-based authorization for an HTTP API module using `@labshare/services` to load the route definition.
 With the configuration below, only JWTs containing an audience of `https://my.api.identifier/resource` and a `read:users` scope
-would be allowed to access the API route. Additionally, the JWT would be validated using the JSON Web Key Set of the
+would be allowed to access the API route. Additionally, the JWT would be validated against the JSON Web Key Set of the
 specified LabShare Auth Tenant.
 
 ```js
@@ -49,7 +51,7 @@ module.exports = {
 ```
 
 ```js
-// lib/index.js
+// index.js
 
 const {Services} = require('@labshare/services');
 const servicesAuth = require('@labshare/services-auth');
@@ -65,6 +67,27 @@ services.config(servicesAuth({
 }));
 
 services.start();
+```
+
+### Express.js
+
+The `@labshare/services-auth` module exports generic Express.js middleware for route authentication.
+
+```js
+// index.js
+
+const app = require('express')();
+const servicesAuth = require('@labshare/services-auth');
+
+// Adds route authentication to the Express.js routes
+app.use('/protected/*', servicesAuth.express({
+    authUrl: 'https://ls.auth.io/_api',
+    audience: 'https://my.api.identifier/resource',
+    issuer: 'LabShare Auth',
+    tenant: 'my-tenant'
+}));
+
+app.listen(3000);
 ```
 
 ## Development
