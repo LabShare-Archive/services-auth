@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/LabShare/services-auth/compare/v2.1.0...v2.1.1) (2018-08-30)
+
+
+### Bug Fixes
+
+* **pkg:** pin "deprecate" until TypeError is fixed ([47f1f54](https://github.com/LabShare/services-auth/commit/47f1f54))
+
 # [2.1.0](https://github.com/LabShare/services-auth/compare/v2.0.2...v2.1.0) (2018-08-22)
 
 
