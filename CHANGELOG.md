@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/LabShare/services-auth/compare/v2.1.1...v2.1.2) (2018-09-12)
+
+
+### Bug Fixes
+
+* **pkg:** npm access should be public ([a797da8](https://github.com/LabShare/services-auth/commit/a797da8))
+
 ## [2.1.1](https://github.com/LabShare/services-auth/compare/v2.1.0...v2.1.1) (2018-08-30)
 
 
