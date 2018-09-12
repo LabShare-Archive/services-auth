@@ -60,7 +60,7 @@
     "extends": "@labshare/semantic-release-config"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "peerDependencies": {}
 }
