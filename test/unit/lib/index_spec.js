@@ -33,23 +33,23 @@ function getProfile(authToken) {
 
 describe('Services-Auth', () => {
 
-    const packagesPath = './test/fixtures/main-package',
-        apiPackage1Prefix = '/socket-api-package-1-namespace',
-        tenant = 'ls',
-        defaultAudience = 'https://my.api.id/v2',
-        certificates = selfsigned.generate([
-            {
-                name: 'commonName',
-                value: 'labshare.org'
-            }
-        ], {
-            days: 365
-        });
+    const packagesPath = './test/fixtures/main-package';
+    const apiPackage1Prefix = '/socket-api-package-1-namespace';
+    const tenant = 'ls';
+    const defaultAudience = 'https://my.api.id/v2';
+    const certificates = selfsigned.generate([
+        {
+            name: 'commonName',
+            value: 'labshare.org'
+        }
+    ], {
+        days: 365
+    });
 
-    let authServerUrl,
-        authServer,
-        authServerPort,
-        app;
+    let authServerUrl;
+    let authServer;
+    let authServerPort;
+    let app;
 
     function createToken(sub, scope = '', audience = defaultAudience) {
         return jws.sign({
@@ -112,12 +112,12 @@ describe('Services-Auth', () => {
 
     describe('when authorizing users', () => {
 
-        let services,
-            request,
-            port,
-            socketAPIUrl,
-            clientSocket,
-            servicesServer;
+        let services;
+        let request;
+        let port;
+        let socketAPIUrl;
+        let clientSocket;
+        let servicesServer;
 
         beforeEach(done => {
             const loggerMock = jasmine.createSpyObj('logger', ['error', 'info', 'warn']);
@@ -143,7 +143,6 @@ describe('Services-Auth', () => {
                     socket: {
                         connections: []
                     }
-
                 });
 
                 done();
@@ -192,6 +191,12 @@ describe('Services-Auth', () => {
                         done();
                     })
                     .catch(done.fail);
+            });
+
+            it('does not require authentication when the route is public', async () => {
+                await request
+                    .get('/api-package-1-namespace/public/task')
+                    .expect('public task complete');
             });
 
             it('requires the audience claim to match', (done) => {
@@ -298,10 +303,10 @@ describe('Services-Auth', () => {
             });
 
             it('allows complex interactions such as id-based channel notifications', (done) => {
-                const clientA = clientio.connect(socketAPIUrl),
-                    clientB = clientio.connect(socketAPIUrl),
-                    clientC = clientio.connect(socketAPIUrl),
-                    clientD = clientio.connect(socketAPIUrl);
+                const clientA = clientio.connect(socketAPIUrl);
+                const clientB = clientio.connect(socketAPIUrl);
+                const clientC = clientio.connect(socketAPIUrl);
+                const clientD = clientio.connect(socketAPIUrl);
 
                 const staffUserToken = createToken(2);
                 const adminUserToken = createToken(3);
