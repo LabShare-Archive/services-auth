@@ -199,24 +199,31 @@ describe('Services-Auth', () => {
                     .expect('public task complete');
             });
 
-            it('requires the audience claim to match', (done) => {
-                const token = createToken(1, '', 'not-a-valid-audience');
+            it('still requires authentication when the scope array is empty', async () => {
+                const token = createToken(1, '');
 
-                request.post('/api-package-1-namespace/books')
+                await request
+                    .get('/api-package-1-namespace/books/empty/scope')
                     .set('Authorization', 'Bearer ' + token)
-                    .expect(401)
-                    .then(done)
-                    .catch(done.fail);
+                    .expect(200)
+                    .expect('got books');
             });
 
-            it('requires an Authorization Bearer token in the request headers', (done) => {
-                request.post('/api-package-1-namespace/books')
-                    .expect(401)
-                    .then((res) => {
-                        expect(res.text).toBe('No authorization token was found');
-                        done();
-                    })
-                    .catch(done.fail);
+            it('requires the audience claim to match', async () => {
+                const token = createToken(1, 'write:books', 'not-a-valid-audience');
+
+                await request
+                    .post('/api-package-1-namespace/books')
+                    .set('Authorization', 'Bearer ' + token)
+                    .expect(401);
+            });
+
+            it('requires an Authorization Bearer token in the request headers', async () => {
+                const res = await request
+                    .post('/api-package-1-namespace/books')
+                    .expect(401);
+
+                expect(res.text).toBe('No authorization token was found');
             });
 
             it('checks if the user is authorized with socket messages', done => {
