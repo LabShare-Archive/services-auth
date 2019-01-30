@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/LabShare/services-auth/compare/v2.1.3...v2.1.4) (2019-01-30)
+
+
+### Bug Fixes
+
+* parseBearerToken module issue ([7f9800b](https://github.com/LabShare/services-auth/commit/7f9800b))
+
 ## [2.1.3](https://github.com/LabShare/services-auth/compare/v2.1.2...v2.1.3) (2018-11-02)
 
 
