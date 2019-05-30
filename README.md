@@ -16,13 +16,14 @@ npm i @labshare/services-auth --save
 
 ## Options
 
- * `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`.
- Required if `secretProvider` is not specified.
- * `tenant` (`String`) - The LabShare Auth Tenant ID the API service is registered to. Required if
- `secretProvider` is not specified.
- * `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
- * `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
- * `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
+- `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`.
+  Required if `secretProvider` is not specified.
+- `tenant` (`String`) - The LabShare Auth Tenant ID the API service is registered to. Required if
+  `secretProvider` is not specified.
+- `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
+- `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
+- `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req: Request, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
+- `isRevokedCallback` (`Function`) - An optional, custom function to check if the JWT has been revoked. Function signature: `(req: Request, payload, cb: (error: Error, isRevoked: boolean) => void): void`;
 
 ## Usage
 
@@ -37,34 +38,34 @@ specified LabShare Auth Tenant.
 // api/users.js
 
 module.exports = {
-    routes: [
-        {
-            path: '/users',
-            httpMethod: 'GET',
-            middleware: getUsers,
-            scope: [
-                'read:users'
-            ]
-        }
-    ]
-}
+  routes: [
+    {
+      path: "/users",
+      httpMethod: "GET",
+      middleware: getUsers,
+      scope: ["read:users"]
+    }
+  ]
+};
 ```
 
 ```js
 // index.js
 
-const {Services} = require('@labshare/services');
-const servicesAuth = require('@labshare/services-auth');
+const { Services } = require("@labshare/services");
+const servicesAuth = require("@labshare/services-auth");
 
 const services = new Services(/* options */);
 
 // Adds scope-based route authentication and authorization to LabShare Service routes and sockets
-services.config(servicesAuth({
-    authUrl: 'https://ls.auth.io/_api',
-    audience: 'https://my.api.identifier/resource',
-    issuer: 'LabShare Auth',
-    tenant: 'my-tenant'
-}));
+services.config(
+  servicesAuth({
+    authUrl: "https://ls.auth.io/_api",
+    audience: "https://my.api.identifier/resource",
+    issuer: "LabShare Auth",
+    tenant: "my-tenant"
+  })
+);
 
 services.start();
 ```
@@ -76,16 +77,19 @@ The `@labshare/services-auth` module exports generic Express.js middleware for r
 ```js
 // index.js
 
-const app = require('express')();
-const servicesAuth = require('@labshare/services-auth');
+const app = require("express")();
+const servicesAuth = require("@labshare/services-auth");
 
 // Adds route authentication to the Express.js routes
-app.use('/protected/*', servicesAuth.express({
-    authUrl: 'https://ls.auth.io/_api',
-    audience: 'https://my.api.identifier/resource',
-    issuer: 'LabShare Auth',
-    tenant: 'my-tenant'
-}));
+app.use(
+  "/protected/*",
+  servicesAuth.express({
+    authUrl: "https://ls.auth.io/_api",
+    audience: "https://my.api.identifier/resource",
+    issuer: "LabShare Auth",
+    tenant: "my-tenant"
+  })
+);
 
 app.listen(3000);
 ```
@@ -98,4 +102,3 @@ app.listen(3000);
 ## Tests
 
 `npm test`
-
