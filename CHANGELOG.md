@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/LabShare/services-auth/compare/v2.1.4...v2.2.0) (2019-05-30)
+
+
+### Features
+
+* **jwt:** expose isRevokedCallback option ([af94332](https://github.com/LabShare/services-auth/commit/af94332))
+
 ## [2.1.4](https://github.com/LabShare/services-auth/compare/v2.1.3...v2.1.4) (2019-01-30)
 
 
