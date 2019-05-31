@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/LabShare/services-auth/compare/v2.2.0...v2.2.1) (2019-05-31)
+
+
+### Bug Fixes
+
+* **ci:** remove unused publishing package ([095ee3a](https://github.com/LabShare/services-auth/commit/095ee3a))
+
 # [2.2.0](https://github.com/LabShare/services-auth/compare/v2.1.4...v2.2.0) (2019-05-30)
 
 
