@@ -1,3 +1,24 @@
+# [2.2.0](https://github.com/LabShare/services-auth/compare/v2.1.4...v2.2.0) (2019-05-30)
+
+
+### Features
+
+* **jwt:** expose isRevokedCallback option ([af94332](https://github.com/LabShare/services-auth/commit/af94332))
+
+## [2.1.4](https://github.com/LabShare/services-auth/compare/v2.1.3...v2.1.4) (2019-01-30)
+
+
+### Bug Fixes
+
+* parseBearerToken module issue ([7f9800b](https://github.com/LabShare/services-auth/commit/7f9800b))
+
+## [2.1.3](https://github.com/LabShare/services-auth/compare/v2.1.2...v2.1.3) (2018-11-02)
+
+
+### Bug Fixes
+
+* **pkg:** use library instead of custom code to parse bearer token ([09345b0](https://github.com/LabShare/services-auth/commit/09345b0))
+
 ## [2.1.2](https://github.com/LabShare/services-auth/compare/v2.1.1...v2.1.2) (2018-09-12)
 
 
