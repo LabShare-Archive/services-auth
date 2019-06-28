@@ -68,7 +68,7 @@ describe('Auth User', () => {
         request.reply(500, {});
 
         authUser({authUrl})({authToken: token}, (error, data) => {
-            expect(error).toBe(500);
+            expect(error.code).toBe(500);
             expect(data).toBeUndefined();
             done();
         });
