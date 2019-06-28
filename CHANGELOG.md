@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/LabShare/services-auth/compare/v2.2.1...v2.2.2) (2019-06-28)
+
+
+### Bug Fixes
+
+* **authz:** add error message for failed /auth/me requests ([#79](https://github.com/LabShare/services-auth/issues/79)) ([c229b5c](https://github.com/LabShare/services-auth/commit/c229b5c))
+
 ## [2.2.1](https://github.com/LabShare/services-auth/compare/v2.2.0...v2.2.1) (2019-05-31)
 
 
