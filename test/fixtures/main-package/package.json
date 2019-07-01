@@ -1,8 +1,0 @@
-{
-  "name": "main-package",
-  "version": "0.0.1",
-  "packageDependencies": [
-    "api-package1",
-    "socket-api-package1"
-  ]
-}

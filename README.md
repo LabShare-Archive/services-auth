@@ -1,104 +1,157 @@
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
-[![Greenkeeper badge](https://badges.greenkeeper.io/LabShare/services-auth.svg)](https://greenkeeper.io/)
-[![Coverage Status](https://coveralls.io/repos/github/LabShare/services-auth/badge.svg)](https://coveralls.io/github/LabShare/services-auth)
-[![codecov](https://codecov.io/gh/LabShare/services-cache/branch/master/graph/badge.svg)](https://codecov.io/gh/LabShare/services-cache)
+# @labshare/services-auth
 
-# Services Auth
+[![Build Status](https://travis-ci.com/LabShare/services-auth.svg?branch=master)](https://travis-ci.com/LabShare/services-auth)
 
-`@labshare/services-auth` is an Express.js middleware plugin that integrates with `Express.js` APIs to provide API
-Resource Scope authorization with RS256 JWT validation.
+# Install
 
-## Install
+`npm i @labshare/services-auth`
 
-```sh
-npm i @labshare/services-auth --save
+# Usage
+
+Register the component and register the configuration for the action by injecting `AuthenticationBindings.AUTH_CONFIG`.
+
+### Example
+
 ```
+import { LbServicesAuthComponent } from '@labshare/lb-services-auth';
+import { CustomProvider } from 'my-custom.provider';
+import { IsRevokedCallbackProvider} from 'is-revoked-callback.provider';
+
+app = new Application();
+app.component(LbServicesAuthComponent);
+app.bind(AuthenticationBindings.AUTH_CONFIG).to({
+  authUrl: 'https://a.labshare.org/_api',
+  tenant: 'my-tenant'
+});
+
+// Assign a custom JWT secret provider (optional)
+app.bind(AuthenticationBindings.SECRET_PROVIDER).toProvider(CustomProvider);
+
+// Assign a custom revoked JWT check (optional)
+app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(IsRevokedCallbackProvider);
+```
+
+Inject the authentication action into the application sequence.
+
+### Example
+
+```
+import {
+  AuthenticationBindings,
+  AuthenticateFn
+} from "@labshare/lb-services-auth";
+
+class MySequence implements SequenceHandler {
+  constructor(
+    @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
+    @inject(SequenceActions.PARSE_PARAMS)
+    protected parseParams: ParseParams,
+    @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
+    @inject(SequenceActions.SEND) protected send: Send,
+    @inject(SequenceActions.REJECT) protected reject: Reject,
+
+    // Inject the new authentication action
+    @inject(AuthenticationBindings.AUTH_ACTION)
+    protected authenticateRequest: AuthenticateFn,
+  ) {}
+
+  async handle(context: RequestContext) {
+    try {
+      const {request, response} = context;
+      const route = this.findRoute(request);
+
+      // Authenticate the request
+      await this.authenticateRequest(request as any, response as any);
+
+      const args = await this.parseParams(request, route);
+      const result = await this.invoke(route, args);
+      this.send(response, result);
+    } catch (error) {
+      this.reject(context, error);
+      return;
+    }
+}
+```
+
+Use the `@authenticate` decorator for REST methods requiring authentication.
+Similarly, the `@authenticateController` decorator can be used to require authentication
+on all controller methods and set shared resource scope requirements.
 
 ## Options
 
-- `authUrl` (`String`) - The base URL for a remote LabShare Auth service. Example: `https://a.labshare.org/_api`.
-  Required if `secretProvider` is not specified.
-- `tenant` (`String`) - The LabShare Auth Tenant ID the API service is registered to. Required if
-  `secretProvider` is not specified.
-- `audience` (`String`) - An optional API service identifier used for JWT `audience` validation. This is the identifier of an API service (OAuth Resource Server) registered to the LabShare Auth system.
-- `issuer` (`String`) - Optional value for validating the JWT issuer (the `iss` claim).
-- `secretProvider` (`Function`) - An optional, custom function for obtaining the signing certificate for RS256. The signature is `(req: Request, header: {alg: string}, payload, cb: (error: Error, signingCert: string) => void): void`.
-- `isRevokedCallback` (`Function`) - An optional, custom function to check if the JWT has been revoked. Function signature: `(req: Request, payload, cb: (error: Error, isRevoked: boolean) => void): void`;
+| Property | Type  | Details                                                                                                    |
+| :------- | :---: | :--------------------------------------------------------------------------------------------------------- |
+| scopes   | array | A list of one zero or more arbitrary Resource Scope definitions. Example: `['read:users', 'update:users']` |
 
-## Usage
+### Dynamic Scopes
 
-### LabShare Services
+Dynamic path/query parameters can be injected into scope definitions using brackets. For example: [`read:users:{path.id}`, `update:users:{query.limit}`] assigned to a route such as `/users/{id}` would require the request's bearer token to contain a scope
+matching the `id` parameter in the route (for example: `'read:users:5'` if the request route is `/users/5`).
 
-This example demonstrates scope-based authorization for an HTTP API module using `@labshare/services` to load the route definition.
-With the configuration below, only JWTs containing an audience of `https://my.api.identifier/resource` and a `read:users` scope
-would be allowed to access the API route. Additionally, the JWT would be validated against the JSON Web Key Set of the
-specified LabShare Auth Tenant.
+### Example
 
-```js
-// api/users.js
+```
+import { authenticate, authenticateController } from "@labshare/lb-services-auth";
 
-module.exports = {
-  routes: [
-    {
-      path: "/users",
-      httpMethod: "GET",
-      middleware: getUsers,
-      scope: ["read:users"]
+// Attach the controller decorator to require authentication on all methods
+// and a scope of `my:shared:scope`
+@authenticateController({
+  scope: 'my:shared:scope'
+})
+@api({})
+class MyController {
+  constructor() {}
+
+  @authenticate()
+  @get('/whoAmI', {
+    'x-operation-name': 'whoAmI',
+    responses: {
+      '200': {
+        description: '',
+        schema: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async whoAmI(): Promise<string> {
+    return 'authenticated data';
+  }
+
+  // This route has an additional Resource Scope requirement. The user's bearer token will need to contain
+  // 'read:users' in the `scope` claim. Otherwise, they will receive a 403 in the response.
+  @authenticate({
+    scope: ['read:users']
+  })
+  @get('/users', {
+    'x-operation-name': 'users',
+    responses: {
+      '200': {
+        description: '',
+        schema: {
+          type: 'string',
+        },
+      },
     }
-  ]
-};
-```
-
-```js
-// index.js
-
-const { Services } = require("@labshare/services");
-const servicesAuth = require("@labshare/services-auth");
-
-const services = new Services(/* options */);
-
-// Adds scope-based route authentication and authorization to LabShare Service routes and sockets
-services.config(
-  servicesAuth({
-    authUrl: "https://ls.auth.io/_api",
-    audience: "https://my.api.identifier/resource",
-    issuer: "LabShare Auth",
-    tenant: "my-tenant"
   })
-);
+  async users(): Promise<string> {
+    return 'users';
+  }
 
-services.start();
-```
-
-### Express.js
-
-The `@labshare/services-auth` module exports generic Express.js middleware for route authentication.
-
-```js
-// index.js
-
-const app = require("express")();
-const servicesAuth = require("@labshare/services-auth");
-
-// Adds route authentication to the Express.js routes
-app.use(
-  "/protected/*",
-  servicesAuth.express({
-    authUrl: "https://ls.auth.io/_api",
-    audience: "https://my.api.identifier/resource",
-    issuer: "LabShare Auth",
-    tenant: "my-tenant"
+  // This route has a dynamic scope parameter for validation.
+  // The request will be unauthorized if the JWT does not contain the "tenantId", "someOtherParam" values in the route path and the "someParam" query parameter.
+  @authenticate({
+    scope: ['{path.tenantId}:read:users:{query.someParam}:{path.someOtherParam}']
   })
-);
+  @get('{tenantId}/users')
+  async users(
+    @param.path.string('tenantId') tenantId: string,
+    @param.path.number('someOtherParam') someOtherParam: number,
+    @param.query.boolean('someParam') someParam: boolean
+  ): Promise<string> {
+    return `${tenantId} users';
+  }
+}
 
-app.listen(3000);
+app.controller(MyController);
 ```
-
-## Development
-
-1. Install Node.js >= 8.11.2
-2. `npm i`
-
-## Tests
-
-`npm test`
