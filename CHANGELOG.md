@@ -1,3 +1,16 @@
+# [3.0.0](https://github.com/LabShare/services-auth/compare/v2.2.2...v3.0.0) (2019-07-03)
+
+
+### Features
+
+* **lb4:** loopback 4 authz support ([e9d4cf4](https://github.com/LabShare/services-auth/commit/e9d4cf4))
+
+
+### BREAKING CHANGES
+
+* **lb4:** replace implementation with a Loopback 4 version that uses
+controller and method Lb4 decorators to enable authz.
+
 ## [2.2.2](https://github.com/LabShare/services-auth/compare/v2.2.1...v2.2.2) (2019-06-28)
 
 
