@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/LabShare/services-auth/compare/v3.0.0...v3.0.1) (2019-07-09)
+
+
+### Bug Fixes
+
+* fix Travis CI badge ([cc8fca4](https://github.com/LabShare/services-auth/commit/cc8fca4))
+
 # [3.0.0](https://github.com/LabShare/services-auth/compare/v2.2.2...v3.0.0) (2019-07-03)
 
 
