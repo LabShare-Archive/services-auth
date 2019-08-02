@@ -17,6 +17,7 @@ import {
   getAuthenticateMetadata,
   getAuthenticateControllerMetadata,
 } from '../decorators/authenticate.decorator';
+import * as express from 'express';
 
 const defaultJwksClientOptions = {
   cache: true,
@@ -27,6 +28,14 @@ const defaultJwksClientOptions = {
 interface ParsedParams {
   path: {[key: string]: any};
   query: {[key: string]: any};
+}
+
+export interface IsRevokedCallback {
+  (
+    req: express.Request,
+    payload: any,
+    done: (err: any, revoked?: boolean) => void,
+  ): Promise<void> | void;
 }
 
 /**
@@ -49,7 +58,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     @inject.getter(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER, {
       optional: true,
     })
-    private readonly isRevokedCallbackProvider: Getter<jwt.IsRevokedCallback>,
+    private readonly isRevokedCallbackProvider: Getter<IsRevokedCallback>,
     @inject(SequenceActions.PARSE_PARAMS)
     private readonly parseParams: ParseParams,
     @inject(SequenceActions.FIND_ROUTE) private readonly findRoute: FindRoute,
