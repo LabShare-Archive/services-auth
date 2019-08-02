@@ -17,6 +17,7 @@ import {
   getAuthenticateMetadata,
   getAuthenticateControllerMetadata,
 } from '../decorators/authenticate.decorator';
+import * as express from 'express';
 
 const defaultJwksClientOptions = {
   cache: true,
@@ -27,6 +28,30 @@ const defaultJwksClientOptions = {
 interface ParsedParams {
   path: {[key: string]: any};
   query: {[key: string]: any};
+}
+
+export interface IsRevokedCallback {
+  (
+    req: express.Request,
+    payload: any,
+    done: (err: any, revoked?: boolean) => void,
+  ): Promise<void> | void;
+}
+
+export interface SecretCallbackLong {
+  (
+    req: express.Request,
+    header: any,
+    payload: any,
+    done: (err: any, secret?: jwt.secretType) => void,
+  ): Promise<void> | void;
+}
+export interface SecretCallback {
+  (
+    req: express.Request,
+    payload: any,
+    done: (err: any, secret?: jwt.secretType) => void,
+  ): Promise<void> | void;
 }
 
 /**
@@ -45,11 +70,13 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     @inject.getter(CoreBindings.CONTROLLER_METHOD_NAME, {optional: true})
     private readonly getMethod: Getter<string>,
     @inject.getter(AuthenticationBindings.SECRET_PROVIDER, {optional: true})
-    private readonly secretProvider: Getter<jwt.SecretCallback>,
+    private readonly secretProvider: Getter<
+      SecretCallback | SecretCallbackLong
+    >,
     @inject.getter(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER, {
       optional: true,
     })
-    private readonly isRevokedCallbackProvider: Getter<jwt.IsRevokedCallback>,
+    private readonly isRevokedCallbackProvider: Getter<IsRevokedCallback>,
     @inject(SequenceActions.PARSE_PARAMS)
     private readonly parseParams: ParseParams,
     @inject(SequenceActions.FIND_ROUTE) private readonly findRoute: FindRoute,
@@ -94,7 +121,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       jwksUri: `${authUrl}/auth/${tenant}/.well-known/jwks.json`,
     };
 
-    const secret: jwt.SecretCallback =
+    const secret =
       (await this.secretProvider()) ||
       jwksClient.expressJwtSecret(jwksClientOptions);
     const isRevoked = await this.isRevokedCallbackProvider();
