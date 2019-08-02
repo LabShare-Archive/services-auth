@@ -1,3 +1,11 @@
+## [3.0.3](https://github.com/LabShare/services-auth/compare/v3.0.2...v3.0.3) (2019-08-02)
+
+
+### Bug Fixes
+
+* **ts:** fix typing for secret callback ([c206f39](https://github.com/LabShare/services-auth/commit/c206f39))
+* **ts:** fix typing of revoked callback ([04bd1aa](https://github.com/LabShare/services-auth/commit/04bd1aa))
+
 ## [3.0.2](https://github.com/LabShare/services-auth/compare/v3.0.1...v3.0.2) (2019-07-11)
 
 
