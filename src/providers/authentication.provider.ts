@@ -38,6 +38,22 @@ export interface IsRevokedCallback {
   ): Promise<void> | void;
 }
 
+export interface SecretCallbackLong {
+  (
+    req: express.Request,
+    header: any,
+    payload: any,
+    done: (err: any, secret?: jwt.secretType) => void,
+  ): Promise<void> | void;
+}
+export interface SecretCallback {
+  (
+    req: express.Request,
+    payload: any,
+    done: (err: any, secret?: jwt.secretType) => void,
+  ): Promise<void> | void;
+}
+
 /**
  * @description Provider of a function which authenticates
  * @example `context.bind('authentication_key')
@@ -54,7 +70,9 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     @inject.getter(CoreBindings.CONTROLLER_METHOD_NAME, {optional: true})
     private readonly getMethod: Getter<string>,
     @inject.getter(AuthenticationBindings.SECRET_PROVIDER, {optional: true})
-    private readonly secretProvider: Getter<jwt.SecretCallback>,
+    private readonly secretProvider: Getter<
+      SecretCallback | SecretCallbackLong
+    >,
     @inject.getter(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER, {
       optional: true,
     })
@@ -103,7 +121,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       jwksUri: `${authUrl}/auth/${tenant}/.well-known/jwks.json`,
     };
 
-    const secret: jwt.SecretCallback =
+    const secret =
       (await this.secretProvider()) ||
       jwksClient.expressJwtSecret(jwksClientOptions);
     const isRevoked = await this.isRevokedCallbackProvider();
