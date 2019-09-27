@@ -26,7 +26,7 @@ import * as http from 'http';
 const selfsigned = require('selfsigned');
 const SequenceActions = RestBindings.SequenceActions;
 
-describe('Basic Authentication', () => {
+describe('Authentication Decorator', () => {
   let authApp: any;
   let app: Application;
   let server: RestServer;
@@ -53,9 +53,12 @@ describe('Basic Authentication', () => {
    * @param {string} sub
    * @param {string} scope
    * @param {string} audience
-   * @returns {any}
    */
-  function createToken(sub: string, scope = '', audience = defaultAudience) {
+  function createToken(
+    sub: string,
+    scope = '',
+    audience = defaultAudience,
+  ): string {
     return jws.sign(
       {
         jti: 123456,
