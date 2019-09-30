@@ -13,10 +13,7 @@ import * as jwt from 'express-jwt';
 import parseToken from 'parse-bearer-token';
 import {CoreBindings} from '@loopback/core';
 import {get} from 'lodash';
-import {
-  getAuthenticateMetadata,
-  getAuthenticateControllerMetadata,
-} from '../decorators/authenticate.decorator';
+import {getAuthenticateMetadata} from '../decorators/authenticate.decorator';
 import * as express from 'express';
 
 const defaultJwksClientOptions = {
@@ -82,9 +79,6 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     @inject(SequenceActions.FIND_ROUTE) private readonly findRoute: FindRoute,
   ) {}
 
-  /**
-   * @returns authenticateFn
-   */
   value(): AuthenticateFn {
     return (request: any, response: any) => this.action(request, response);
   }
@@ -98,11 +92,10 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     const controller = await this.getController();
     const method = await this.getMethod();
 
-    const controllerMetadata = getAuthenticateControllerMetadata(controller);
     const metadata = getAuthenticateMetadata(controller, method);
 
     // If REST method or class is not decorated, we skip the authentication check
-    if (!metadata && !controllerMetadata) {
+    if (!metadata) {
       return;
     }
 
@@ -143,10 +136,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       });
     });
 
-    const scope = [
-      ...((controllerMetadata && controllerMetadata.scope) || []),
-      ...((metadata && metadata.scope) || []),
-    ];
+    const scope = [...((metadata && metadata.scope) || [])];
 
     // Validate JWT Resource Scopes against one or more scopes required by the API.
     // For example: 'read:users'
