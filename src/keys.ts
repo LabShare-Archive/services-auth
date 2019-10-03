@@ -80,9 +80,9 @@ export const AUTHENTICATION_METADATA_KEY = MetadataAccessor.create<
 >('authentication.method.operationsMetadata');
 
 /**
- * The key used to store controller authentication decorator metadata
+ * The key used to store class-level metadata for `@authenticate`
  */
-export const CONTROLLER_AUTHENTICATION_METADATA_KEY = MetadataAccessor.create<
+export const AUTHENTICATION_METADATA_CLASS_KEY = MetadataAccessor.create<
   AuthenticationMetadata,
   ClassDecorator
->('authentication.controller.operationsMetadata');
+>('authentication:class');

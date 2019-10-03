@@ -15,12 +15,8 @@ import {api, get, param} from '@loopback/openapi-v3';
 import {Client, createClientForHandler, expect} from '@loopback/testlab';
 import {anOpenApiSpec} from '@loopback/openapi-spec-builder';
 import {inject} from '@loopback/context';
-import {AuthenticateFn, AuthenticationBindings} from '../../src';
+import {AuthenticateFn, AuthenticationBindings, authenticate} from '../../src';
 import {LbServicesAuthComponent} from '../../src';
-import {
-  authenticate,
-  authenticateController,
-} from '../../src/decorators/authenticate.decorator';
 import * as jws from 'jsonwebtoken';
 import {pem2jwk} from 'pem-jwk';
 import * as portfinder from 'portfinder';
@@ -217,7 +213,7 @@ describe('Basic Authentication', () => {
       })
       .build();
 
-    @authenticateController({
+    @authenticate({
       scope: ['shared:scope'],
     })
     @api(apispec)

@@ -73,9 +73,7 @@ class MySequence implements SequenceHandler {
 }
 ```
 
-Use the `@authenticate` decorator for REST methods requiring authentication.
-Similarly, the `@authenticateController` decorator can be used to require authentication
-on all controller methods and set shared resource scope requirements.
+Use the `@authenticate` decorator for REST methods or controllers requiring authentication.
 
 ## Options
 
@@ -91,11 +89,11 @@ matching the `id` parameter in the route (for example: `'read:users:5'` if the r
 ### Example
 
 ```
-import { authenticate, authenticateController } from "@labshare/lb-services-auth";
+import { authenticate } from "@labshare/lb-services-auth";
 
-// Attach the controller decorator to require authentication on all methods
+// Attach the decorator at the controller level to require authentication on all methods
 // and a scope of `my:shared:scope`
-@authenticateController({
+@authenticate({
   scope: 'my:shared:scope'
 })
 @api({})
