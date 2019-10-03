@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/LabShare/services-auth/compare/v3.0.3...v3.1.0) (2019-10-03)
+
+
+### Features
+
+* refactor [@authenticate](https://github.com/authenticate) decorator ([ffbef46](https://github.com/LabShare/services-auth/commit/ffbef46))
+
 ## [3.0.3](https://github.com/LabShare/services-auth/compare/v3.0.2...v3.0.3) (2019-08-02)
 
 
