@@ -50,6 +50,10 @@ export namespace AuthenticationBindings {
     'authentication.actions.authenticate',
   );
 
+  export const USER_INFO_ACTION = BindingKey.create<AuthenticateFn>(
+    'authentication.actions.userInfo',
+  );
+
   /**
    * Key used to set configuration for the authentication action
    * @type {BindingKey<any>}

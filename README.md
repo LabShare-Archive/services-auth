@@ -10,7 +10,9 @@
 
 Register the component and register the configuration for the action by injecting `AuthenticationBindings.AUTH_CONFIG`.
 
-### Example
+## Configuring the component
+
+#### Example
 
 ```
 import { LbServicesAuthComponent } from '@labshare/lb-services-auth';
@@ -31,9 +33,14 @@ app.bind(AuthenticationBindings.SECRET_PROVIDER).toProvider(CustomProvider);
 app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(IsRevokedCallbackProvider);
 ```
 
-Inject the authentication action into the application sequence.
+## Actions
 
-### Example
+### Authenticate
+
+Inject the authenticate action into the application sequence to require the user to pass a valid bearer token and
+optionally validate the bearer token's scope and audience claims.
+
+#### Example
 
 ```
 import {
@@ -73,6 +80,55 @@ class MySequence implements SequenceHandler {
 }
 ```
 
+### User Info
+
+Inject the user info action provider into your application sequence to assign the user's profile on `request.userInfo`.
+The profile corresponds to the response returned by LabShare Auth's OIDC `user_info` route.
+
+#### Example
+
+```
+import {
+  AuthenticationBindings,
+  AuthenticateFn
+} from "@labshare/lb-services-auth";
+
+class MySequence implements SequenceHandler {
+  constructor(
+    @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
+    @inject(SequenceActions.PARSE_PARAMS)
+    protected parseParams: ParseParams,
+    @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
+    @inject(SequenceActions.SEND) protected send: Send,
+    @inject(SequenceActions.REJECT) protected reject: Reject,
+
+    // Inject the new authentication action
+    @inject(AuthenticationBindings.USER_INFO_ACTION)
+    protected setUserInfo: AuthenticateFn,
+  ) {}
+
+  async handle(context: RequestContext) {
+    try {
+      const {request, response} = context;
+      const route = this.findRoute(request);
+
+      // Set the userInfo on the request
+      await this.setUserInfo(request as any, response as any);
+
+      const args = await this.parseParams(request, route);
+      const result = await this.invoke(route, args);
+      this.send(response, result);
+    } catch (error) {
+      this.reject(context, error);
+      return;
+    }
+}
+```
+
+## Decorators
+
+### @authenticate
+
 Use the `@authenticate` decorator for REST methods or controllers requiring authentication.
 
 ## Options
@@ -86,7 +142,7 @@ Use the `@authenticate` decorator for REST methods or controllers requiring auth
 Dynamic path/query parameters can be injected into scope definitions using brackets. For example: [`read:users:{path.id}`, `update:users:{query.limit}`] assigned to a route such as `/users/{id}` would require the request's bearer token to contain a scope
 matching the `id` parameter in the route (for example: `'read:users:5'` if the request route is `/users/5`).
 
-### Example
+#### Example
 
 ```
 import { authenticate } from "@labshare/lb-services-auth";
@@ -96,7 +152,6 @@ import { authenticate } from "@labshare/lb-services-auth";
 @authenticate({
   scope: 'my:shared:scope'
 })
-@api({})
 class MyController {
   constructor() {}
 

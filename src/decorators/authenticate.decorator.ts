@@ -81,7 +81,10 @@ export function getAuthenticateMetadata(
     methodName,
   );
 
-  if (metadata) return metadata;
+  if (metadata) {
+    return metadata;
+  }
+
   // Check if the class level has `@authenticate`
   metadata = MetadataInspector.getClassMetadata<AuthenticationMetadata>(
     AUTHENTICATION_METADATA_CLASS_KEY,

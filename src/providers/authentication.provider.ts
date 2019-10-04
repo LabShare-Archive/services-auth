@@ -92,6 +92,10 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
     const controller = await this.getController();
     const method = await this.getMethod();
 
+    if (!controller || !method) {
+      return;
+    }
+
     const metadata = getAuthenticateMetadata(controller, method);
 
     // If REST method or class is not decorated, we skip the authentication check
