@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/LabShare/services-auth/compare/v3.1.0...v3.2.0) (2019-10-04)
+
+
+### Features
+
+* **profile:** add user info sequence action ([8894a6b](https://github.com/LabShare/services-auth/commit/8894a6b))
+
 # [3.1.0](https://github.com/LabShare/services-auth/compare/v3.0.3...v3.1.0) (2019-10-03)
 
 
