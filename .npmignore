@@ -47,3 +47,17 @@ node_modules/
 # Webstorm
 .idea
 node_modules
+
+# Source code
+/src
+/index.ts
+/test
+.prettierignore
+.prettierrc
+.travis.yml
+commitlint.config.js
+DEVELOPING.md
+greenkeeper.json
+tsconfig.json
+tslint.build.json
+tslint.json
