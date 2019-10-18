@@ -1,3 +1,10 @@
+## [3.2.2](https://github.com/LabShare/services-auth/compare/v3.2.1...v3.2.2) (2019-10-18)
+
+
+### Bug Fixes
+
+* **docs:** update configuration option documentation LSAUTH-231 ([60acf41](https://github.com/LabShare/services-auth/commit/60acf41))
+
 ## [3.2.1](https://github.com/LabShare/services-auth/compare/v3.2.0...v3.2.1) (2019-10-08)
 
 
