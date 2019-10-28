@@ -47,7 +47,7 @@ app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(IsRevok
 ### Authenticate
 
 Inject the authenticate action into the application sequence to require the user to pass a valid bearer token and
-optionally validate the bearer token's scope and audience claims.
+optionally validate the bearer token's scope and audience claims. Ensure the authenticate action runs before the controller methods are invoked (see the example).
 
 #### Example
 
@@ -76,7 +76,8 @@ class MySequence implements SequenceHandler {
       const {request, response} = context;
       const route = this.findRoute(request);
 
-      // Authenticate the request
+      // Authenticate the request. We need this sequence action to run before "invoke" to ensure authentication
+      // occurs first.
       await this.authenticateRequest(request as any, response as any);
 
       const args = await this.parseParams(request, route);
