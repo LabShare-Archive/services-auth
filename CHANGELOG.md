@@ -1,3 +1,10 @@
+## [3.2.3](https://github.com/LabShare/services-auth/compare/v3.2.2...v3.2.3) (2019-11-10)
+
+
+### Bug Fixes
+
+* undefined spec at authentication provider ([9a57ae1](https://github.com/LabShare/services-auth/commit/9a57ae1))
+
 ## [3.2.2](https://github.com/LabShare/services-auth/compare/v3.2.1...v3.2.2) (2019-10-18)
 
 
