@@ -12,6 +12,15 @@ Register the component and register the configuration for the action by injectin
 
 ## Configuring the component
 
+## Options
+
+| Property | Type  | Details                                                                                                    |
+| :------- | :---: | :--------------------------------------------------------------------------------------------------------- |
+| tenant   | string | The LabShare Auth Tenant the Resource Server (API) is registered to. Example: `ncats`. |
+| authUrl  | string | The full URL to the LabShare Auth API the Resource Server (API) is registered to. Example: `https://a.labshare.org` |
+| audience | string | The audience of the Resource Server. This is a unique identifier for the API registered on the LabShare Auth Service. It does not need match an actual API deployment host. This is required to check if a Client (application) is allowed to access the API. Example: `https://my.api.com/v2`. Optional. |
+| issuer   | string | The issuer of the Bearer Token. Use this to validate the source of the Bearer Token. Optional. Example: `https://a.labshare.org/_api/ls` |
+
 #### Example
 
 ```
@@ -38,7 +47,7 @@ app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(IsRevok
 ### Authenticate
 
 Inject the authenticate action into the application sequence to require the user to pass a valid bearer token and
-optionally validate the bearer token's scope and audience claims.
+optionally validate the bearer token's scope and audience claims. Ensure the authenticate action runs before the controller methods are invoked (see the example).
 
 #### Example
 
@@ -67,7 +76,8 @@ class MySequence implements SequenceHandler {
       const {request, response} = context;
       const route = this.findRoute(request);
 
-      // Authenticate the request
+      // Authenticate the request. We need this sequence action to run before "invoke" to ensure authentication
+      // occurs first.
       await this.authenticateRequest(request as any, response as any);
 
       const args = await this.parseParams(request, route);
