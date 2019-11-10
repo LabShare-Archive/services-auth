@@ -6,6 +6,7 @@ import {
   ParseParams,
   FindRoute,
   ParameterObject,
+  HttpErrors,
 } from '@loopback/rest';
 import {AuthenticateFn, AuthenticationBindings} from '../keys';
 import * as jwksClient from 'jwks-rsa';
@@ -154,7 +155,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
    * @param {string[]} expectedScopes
    */
   private validateResourceScopes(expectedScopes: string[]) {
-    const error = (res: any) => res.status(403).send('Insufficient scope');
+    const insufficientScopeError = 'Insufficient scope';
 
     if (!Array.isArray(expectedScopes)) {
       throw new Error(
@@ -167,7 +168,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
         return;
       }
       if (!req.user || typeof req.user.scope !== 'string') {
-        return error(res);
+        throw new HttpErrors.Forbidden(insufficientScopeError);
       }
 
       const replaceValue = (parsedParamsObj: ParsedParams) => (
@@ -212,8 +213,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       if (allowed) {
         return;
       }
-
-      error(res);
+      throw new HttpErrors.Forbidden(insufficientScopeError);
     };
   }
 }
