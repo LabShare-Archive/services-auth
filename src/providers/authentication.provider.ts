@@ -188,6 +188,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       if (params) {
         for (let i = 0; i < args.length; ++i) {
           const spec = params[i] as ParameterObject;
+          if (!spec) continue;
           const paramIn = spec.in;
           switch (paramIn) {
             case 'path':
