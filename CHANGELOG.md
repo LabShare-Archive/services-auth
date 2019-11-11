@@ -1,3 +1,11 @@
+## [3.2.4](https://github.com/LabShare/services-auth/compare/v3.2.3...v3.2.4) (2019-11-11)
+
+
+### Bug Fixes
+
+* comment ([bb8f8fe](https://github.com/LabShare/services-auth/commit/bb8f8fe))
+* throw error if forbidden ([fd30826](https://github.com/LabShare/services-auth/commit/fd30826))
+
 ## [3.2.3](https://github.com/LabShare/services-auth/compare/v3.2.2...v3.2.3) (2019-11-10)
 
 
