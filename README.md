@@ -21,6 +21,42 @@ Register the component and register the configuration for the action by injectin
 | audience | string | The audience of the Resource Server. This is a unique identifier for the API registered on the LabShare Auth Service. It does not need match an actual API deployment host. This is required to check if a Client (application) is allowed to access the API. Example: `https://my.api.com/v2`. Optional. |
 | issuer   | string | The issuer of the Bearer Token. Use this to validate the source of the Bearer Token. Optional. Example: `https://a.labshare.org/_api/ls` |
 
+## Bindings (optional)
+
+To perform additional customization of token validation, you can bind Loopback [Providers](https://loopback.io/doc/en/lb4/Creating-components.html#providers) to the following keys:
+
+| Binding  | Details |
+| :------- | :------:|
+| AuthenticationBindings.SECRET_PROVIDER | Obtains the secret used to validate the JWT signature. Not required when using tokens signed by LabShare Auth. |
+| AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER | Used to check if the token has been revoked. For example, a request to the `introspection_endpoint` can check if the JWT is still valid. |
+
+### Example IsRevokedCallbackProvider
+
+```
+import request = require('request-promise');
+
+export class IsRevokedCallbackProvider {
+  constructor() {}
+
+  public async value() {
+    return async (
+      req: Request,
+      payload,
+      callback: (error: Error, isRevoked: boolean) => void
+    ) => {
+      try {
+        // ... request to introspection endpoint
+        // ... check if token is valid
+   
+        callback(null, isTokenRevoked);
+      } catch (error) {
+        callback(error, false);
+      }
+    };
+  }
+}
+```
+
 #### Example
 
 ```
