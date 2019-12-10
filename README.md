@@ -57,6 +57,48 @@ export class IsRevokedCallbackProvider {
 }
 ```
 
+### Example RS256 SecretProvider
+
+```
+import { jwk2pem } from 'pem-jwk';
+
+export class SecretProvider {
+  constructor(
+    @inject('MyJwkService')
+    private jwkService: JwkService
+  ) {}
+
+  public async value() {
+    return async (
+      req: Request,
+      header,
+      payload: any,
+      cb: (err: any, secret?: any) => void
+    ): Promise<void> => {
+      if (!header) {
+        log('Invalid JWT. No header found.');
+        cb(null, null);
+        return;
+      }
+
+      if (header.alg !== 'RS256' || !payload || !payload.sub) {
+        cb(null, null);
+        return;
+      }
+
+      try {
+        const publicJWK = await this.jwkService.getPublicJWK('...');
+        const secret = jwk2pem(publicJWK);
+
+        cb(null, secret);
+      } catch (error) {
+        cb(null, null);
+      }
+    };
+  }
+}
+```
+
 #### Example
 
 ```
