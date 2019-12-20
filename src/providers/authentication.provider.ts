@@ -155,8 +155,6 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
    * @param {string[]} expectedScopes
    */
   private validateResourceScopes(expectedScopes: string[]) {
-    const insufficientScopeError = 'Insufficient scope';
-
     if (!Array.isArray(expectedScopes)) {
       throw new Error(
         'Parameter expectedScopes must be an array of strings representing the scopes for the endpoint(s)',
@@ -167,6 +165,11 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       if (expectedScopes.length === 0) {
         return;
       }
+
+      const insufficientScopeError = `Insufficient scope. Required scopes: ${expectedScopes.join(
+        ' ',
+      )}`;
+
       if (!req.user || typeof req.user.scope !== 'string') {
         throw new HttpErrors.Forbidden(insufficientScopeError);
       }
