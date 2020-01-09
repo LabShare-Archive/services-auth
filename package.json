@@ -50,24 +50,24 @@
     "tiny-json-http": "^7.1.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^7.0.0",
-    "@commitlint/config-conventional": "^7.0.1",
-    "@loopback/build": "^1.0.0",
+    "@commitlint/cli": "^8.3.4",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@loopback/build": "^3.0.1",
     "@loopback/openapi-spec-builder": "^1.0.0",
     "@loopback/testlab": "^1.0.0",
     "@semantic-release/changelog": "^3.0.4",
-    "@semantic-release/git": "^7.0.16",
+    "@semantic-release/git": "^8.0.0",
     "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "^8.3.2",
-    "@types/node": "^10.11.2",
+    "@types/node": "^13.1.6",
     "@types/pem-jwk": "^1.5.0",
     "express": "^4.16.4",
-    "husky": "^0.14.3",
+    "husky": "^4.0.4",
     "jsonwebtoken": "^8.3.0",
-    "pem-jwk": "^1.5.1",
+    "pem-jwk": "^2.0.0",
     "portfinder": "^1.0.19",
     "selfsigned": "^1.10.4",
-    "semantic-release": "^15.10.8"
+    "semantic-release": "^16.0.0"
   },
   "release": {
     "verifyConditions": [
