@@ -1,6 +1,6 @@
 # @labshare/services-auth
 
-[![Build Status](https://travis-ci.org/LabShare/services-auth.svg?branch=master)](https://travis-ci.org/LabShare/services-auth)
+[![Build Status](https://travis-ci.org/LabShare/services-auth.svg?branch=master)](https://travis-ci.org/LabShare/services-auth) [![Greenkeeper badge](https://badges.greenkeeper.io/LabShare/services-auth.svg)](https://greenkeeper.io/)
 
 # Install
 
