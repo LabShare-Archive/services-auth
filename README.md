@@ -14,21 +14,22 @@ Register the component and register the configuration for the action by injectin
 
 ## Options
 
-| Property | Type  | Details                                                                                                    |
-| :------- | :---: | :--------------------------------------------------------------------------------------------------------- |
-| tenant   | string | The LabShare Auth Tenant the Resource Server (API) is registered to. Example: `ncats`. |
-| authUrl  | string | The full URL to the LabShare Auth API the Resource Server (API) is registered to. Example: `https://a.labshare.org` |
+| Property |  Type  | Details                                                                                                                                                                                                                                                                                                   |
+| :------- | :----: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| tenant   | string | The LabShare Auth Tenant the Resource Server (API) is registered to. Example: `ncats`.                                                                                                                                                                                                                    |
+| authUrl  | string | The full URL to the LabShare Auth API the Resource Server (API) is registered to. Example: `https://a.labshare.org`                                                                                                                                                                                       |
 | audience | string | The audience of the Resource Server. This is a unique identifier for the API registered on the LabShare Auth Service. It does not need match an actual API deployment host. This is required to check if a Client (application) is allowed to access the API. Example: `https://my.api.com/v2`. Optional. |
-| issuer   | string | The issuer of the Bearer Token. Use this to validate the source of the Bearer Token. Optional. Example: `https://a.labshare.org/_api/ls` |
+| issuer   | string | The issuer of the Bearer Token. Use this to validate the source of the Bearer Token. Optional. Example: `https://a.labshare.org/_api/ls`                                                                                                                                                                  |
 
 ## Bindings (optional)
 
 To perform additional customization of token validation, you can bind Loopback [Providers](https://loopback.io/doc/en/lb4/Creating-components.html#providers) to the following keys:
 
-| Binding  | Details |
-| :------- | :------:|
-| AuthenticationBindings.SECRET_PROVIDER | Obtains the secret used to validate the JWT signature. Not required when using tokens signed by LabShare Auth. |
-| AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER | Used to check if the token has been revoked. For example, a request to the `introspection_endpoint` can check if the JWT is still valid. |
+| Binding                                               |                                                                               Details                                                                               |
+| :---------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `AuthenticationBindings.SECRET_PROVIDER`              |                           Obtains the secret used to validate the JWT signature. Not required when using tokens signed by LabShare Auth.                            |
+| `AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER` |              Used to check if the token has been revoked. For example, a request to the `introspection_endpoint` can check if the JWT is still valid.               |
+| `AuthenticationBindings.AUDIENCE_PROVIDER`            | Provides the value for the audience the JWT will be validated against instead of using the audience configuration assigned to `AuthenticationBindings.AUTH_CONFIG`. |
 
 ### Example IsRevokedCallbackProvider
 
@@ -47,7 +48,7 @@ export class IsRevokedCallbackProvider {
       try {
         // ... request to introspection endpoint
         // ... check if token is valid
-   
+
         callback(null, isTokenRevoked);
       } catch (error) {
         callback(error, false);
@@ -57,7 +58,7 @@ export class IsRevokedCallbackProvider {
 }
 ```
 
-### Example RS256 SecretProvider
+### Example SecretProvider
 
 ```
 import { jwk2pem } from 'pem-jwk';
@@ -99,11 +100,29 @@ export class SecretProvider {
 }
 ```
 
-#### Example
+### Example AudienceProvider
+
+```
+export class SecretProvider {
+  constructor(
+    // Constructor can inject services used to figure out which audience to use
+    @inject(RestBindings.Http.REQUEST)
+    public request: Request
+  ) {}
+
+  public async value() {
+    // Determine the audience the JWT should be validated against, perhaps based on a value in the API request
+    return 'https://some.new.audience';
+  }
+}
+```
+
+#### Application Bootstrap Example
 
 ```
 import { LbServicesAuthComponent } from '@labshare/lb-services-auth';
-import { CustomProvider } from 'my-custom.provider';
+import { SecretProvider } from 'secret.provider';
+import { AudienceProvider } from 'audience.provider';
 import { IsRevokedCallbackProvider} from 'is-revoked-callback.provider';
 
 app = new Application();
@@ -114,10 +133,13 @@ app.bind(AuthenticationBindings.AUTH_CONFIG).to({
 });
 
 // Assign a custom JWT secret provider (optional)
-app.bind(AuthenticationBindings.SECRET_PROVIDER).toProvider(CustomProvider);
+app.bind(AuthenticationBindings.SECRET_PROVIDER).toProvider(SecretProvider);
 
 // Assign a custom revoked JWT check (optional)
 app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(IsRevokedCallbackProvider);
+
+// Assign a custom audience provider (optional)
+app.bind(AuthenticationBindings.IS_REVOKED_CALLBACK_PROVIDER).toProvider(AudienceProvider);
 ```
 
 ## Actions
