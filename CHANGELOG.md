@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/LabShare/services-auth/compare/v3.2.5...v3.3.0) (2020-01-30)
+
+
+### Features
+
+* **jwt:** add option to configure audience using a provider ([135babe](https://github.com/LabShare/services-auth/commit/135babe))
+
 ## [3.2.5](https://github.com/LabShare/services-auth/compare/v3.2.4...v3.2.5) (2019-12-20)
 
 
