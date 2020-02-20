@@ -28,7 +28,7 @@
   "homepage": "https://github.com/LabShare/services-auth#readme",
   "dependencies": {
     "deprecate": "1.0.0",
-    "express-jwt": "github:KalleV/express-jwt#dad0daebe354a9ad0fc8ab160e406fd5a3cac7d9",
+    "express-jwt": "github:KalleV/express-jwt",
     "express-jwt-authz": "^1.0.0",
     "jwks-rsa": "^1.2.1",
     "lodash": "^4.17.2",
