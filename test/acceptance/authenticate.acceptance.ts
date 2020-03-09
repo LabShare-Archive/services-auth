@@ -50,9 +50,6 @@ describe('Authentication Decorator', () => {
 
   /**
    * Helper for creating a bearer token for RS256
-   * @param {string} sub
-   * @param {string} scope
-   * @param {string} audience
    */
   function createToken(
     sub: string,
@@ -77,117 +74,8 @@ describe('Authentication Decorator', () => {
     );
   }
 
-  beforeEach(done => {
-    authApp = express();
-
-    // Create a JSON Web Key from the PEM
-    const jwk: any = pem2jwk(certificates.private);
-
-    // Azure AD checks for the 'use' and 'kid' properties
-    jwk.kid = '1';
-    jwk.use = 'sig';
-
-    authApp.get(
-      `/auth/${tenant}/.well-known/jwks.json`,
-      (req: any, res: any) => {
-        res.json({
-          keys: [jwk],
-        });
-      },
-    );
-
-    portfinder.getPort((err, unusedPort) => {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      authServerPort = unusedPort;
-      authServerUrl = `http://localhost:${authServerPort}`;
-      authServer = http.createServer(authApp).listen(unusedPort);
-
-      done();
-    });
-  });
-
-  afterEach(done => {
-    authServer.close(done);
-  });
-
-  beforeEach(givenAServer);
-  beforeEach(givenControllerInApp);
-  beforeEach(givenAuthenticatedSequence);
-
-  it('authenticates successfully for correct credentials', async () => {
-    const token = createToken('abc', 'shared:scope');
-    const client = whenIMakeRequestTo(server);
-    const res = await client
-      .get('/whoAmI')
-      .set('Authorization', 'Bearer ' + token);
-    expect(res.body.sub).to.equal('abc');
-  });
-
-  it('authorizes an API with Resource Scope requirements', async () => {
-    const token = createToken('abc', 'shared:scope read:users');
-    const client = whenIMakeRequestTo(server);
-    await client
-      .get('/users')
-      .set('Authorization', 'Bearer ' + token)
-      .expect('all users');
-  });
-
-  it('authorizes an API by expanding dynamic resource scopes', async () => {
-    const token = createToken(
-      'ls:read:users',
-      'shared:scope ls:update:users:100',
-    );
-    const client = whenIMakeRequestTo(server);
-    await client
-      .get('/ls/users?limit=100')
-      .set('Authorization', 'Bearer ' + token)
-      .expect(`received 100 users from tenant ls`);
-  });
-
-  it('returns an error for invalid bearer tokens', async () => {
-    const client = whenIMakeRequestTo(server);
-    await client
-      .get('/whoAmI')
-      .set('Authorization', 'Bearer ' + 'invalid-token')
-      .expect(401);
-  });
-
-  it('returns an error for bearer tokens missing required scope claims', async () => {
-    const token = createToken('abc');
-    const client = whenIMakeRequestTo(server);
-    await client
-      .get('/users')
-      .set('Authorization', 'Bearer ' + token)
-      .expect(403);
-  });
-
-  it('allows anonymous requests to methods with no decorator', async () => {
-    class InfoController {
-      @get('/status')
-      status() {
-        return {running: true};
-      }
-    }
-
-    app.controller(InfoController);
-    await whenIMakeRequestTo(server)
-      .get('/status')
-      .expect(200, {running: true});
-  });
-
-  async function givenAServer() {
-    app = new Application();
-    app.component(LbServicesAuthComponent);
-    app.component(RestComponent);
-    app.bind(AuthenticationBindings.AUTH_CONFIG).to({
-      authUrl: authServerUrl,
-      tenant,
-    });
-    server = await app.getServer(RestServer);
+  function whenIMakeRequestTo(restServer: RestServer): Client {
+    return createClientForHandler(restServer.requestHandler);
   }
 
   function givenControllerInApp() {
@@ -301,7 +189,170 @@ describe('Authentication Decorator', () => {
     server.sequence(MySequence);
   }
 
-  function whenIMakeRequestTo(restServer: RestServer): Client {
-    return createClientForHandler(restServer.requestHandler);
-  }
+  beforeEach(done => {
+    authApp = express();
+
+    // Create a JSON Web Key from the PEM
+    const jwk: any = pem2jwk(certificates.private);
+
+    // Azure AD checks for the 'use' and 'kid' properties
+    jwk.kid = '1';
+    jwk.use = 'sig';
+
+    authApp.get(
+      `/auth/${tenant}/.well-known/jwks.json`,
+      (req: any, res: any) => {
+        res.json({
+          keys: [jwk],
+        });
+      },
+    );
+
+    portfinder.getPort((err, unusedPort) => {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      authServerPort = unusedPort;
+      authServerUrl = `http://localhost:${authServerPort}`;
+      authServer = http.createServer(authApp).listen(unusedPort);
+
+      done();
+    });
+  });
+
+  afterEach(done => {
+    authServer.close(done);
+  });
+
+  describe('when configuring default options', () => {
+    beforeEach(async () => {
+      app = new Application();
+      app.component(LbServicesAuthComponent);
+      app.component(RestComponent);
+      app.bind(AuthenticationBindings.AUTH_CONFIG).to({
+        authUrl: authServerUrl,
+        tenant,
+        audience: defaultAudience,
+      });
+      server = await app.getServer(RestServer);
+    });
+
+    beforeEach(givenControllerInApp);
+    beforeEach(givenAuthenticatedSequence);
+
+    it('authenticates successfully for correct credentials', async () => {
+      const token = createToken('abc', 'shared:scope');
+      const client = whenIMakeRequestTo(server);
+      const res = await client
+        .get('/whoAmI')
+        .set('Authorization', 'Bearer ' + token);
+      expect(res.body.sub).to.equal('abc');
+    });
+
+    it('authorizes an API with Resource Scope requirements', async () => {
+      const token = createToken('abc', 'shared:scope read:users');
+      const client = whenIMakeRequestTo(server);
+      await client
+        .get('/users')
+        .set('Authorization', 'Bearer ' + token)
+        .expect('all users');
+    });
+
+    it('authorizes an API by expanding dynamic resource scopes', async () => {
+      const token = createToken(
+        'ls:read:users',
+        'shared:scope ls:update:users:100',
+      );
+      const client = whenIMakeRequestTo(server);
+      await client
+        .get('/ls/users?limit=100')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(`received 100 users from tenant ls`);
+    });
+
+    it('returns an error for invalid bearer tokens', async () => {
+      const client = whenIMakeRequestTo(server);
+      await client
+        .get('/whoAmI')
+        .set('Authorization', 'Bearer ' + 'invalid-token')
+        .expect(401);
+    });
+
+    it('returns an error for bearer tokens missing required scope claims', async () => {
+      const token = createToken('abc');
+      const client = whenIMakeRequestTo(server);
+      await client
+        .get('/users')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(403);
+    });
+
+    it('allows anonymous requests to methods with no decorator', async () => {
+      class InfoController {
+        @get('/status')
+        status() {
+          return {running: true};
+        }
+      }
+
+      app.controller(InfoController);
+      await whenIMakeRequestTo(server)
+        .get('/status')
+        .expect(200, {running: true});
+    });
+  });
+
+  describe('when configuring a custom audience provider', () => {
+    const newAudience = 'https://some.new.audience';
+
+    class AudienceProvider {
+      constructor() {}
+
+      public async value() {
+        return newAudience;
+      }
+    }
+
+    beforeEach(async () => {
+      app = new Application();
+      app.component(LbServicesAuthComponent);
+      app.component(RestComponent);
+      app
+        .bind(AuthenticationBindings.AUDIENCE_PROVIDER)
+        .toProvider(AudienceProvider);
+      app.bind(AuthenticationBindings.AUTH_CONFIG).to({
+        authUrl: authServerUrl,
+        tenant,
+      });
+
+      server = await app.getServer(RestServer);
+    });
+
+    beforeEach(givenControllerInApp);
+    beforeEach(givenAuthenticatedSequence);
+
+    it('authenticates successfully with a valid audience', async () => {
+      const token = createToken('abc', 'shared:scope', newAudience);
+      const client = whenIMakeRequestTo(server);
+      const res = await client
+        .get('/whoAmI')
+        .set('Authorization', 'Bearer ' + token);
+
+      expect(res.body.sub).to.equal('abc');
+    });
+
+    it('fails to authenticate with an audience that does not match the one returned by the provider', async () => {
+      const token = createToken('abc', 'shared:scope', 'https://not.valid.com');
+      const client = whenIMakeRequestTo(server);
+      const res = await client
+        .get('/whoAmI')
+        .set('Authorization', 'Bearer ' + token);
+
+      expect(res.body.error.message).to.match(
+        `jwt audience invalid. expected: ${newAudience}`,
+      );
+    });
+  });
 });

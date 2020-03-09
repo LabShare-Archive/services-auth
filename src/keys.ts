@@ -68,6 +68,13 @@ export namespace AuthenticationBindings {
   );
 
   /**
+   * The key used to get a custom JWT audience
+   */
+  export const AUDIENCE_PROVIDER = BindingKey.create<any>(
+    'authentication.audienceProvider',
+  );
+
+  /**
    * The key used to set the custom RS256/HS256 secret provider
    */
   export const IS_REVOKED_CALLBACK_PROVIDER = BindingKey.create<

@@ -75,6 +75,10 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       optional: true,
     })
     private readonly isRevokedCallbackProvider: Getter<IsRevokedCallback>,
+    @inject.getter(AuthenticationBindings.AUDIENCE_PROVIDER, {
+      optional: true,
+    })
+    private readonly audienceProvider: Getter<any>,
     @inject(SequenceActions.PARSE_PARAMS)
     private readonly parseParams: ParseParams,
     @inject(SequenceActions.FIND_ROUTE) private readonly findRoute: FindRoute,
@@ -123,6 +127,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       (await this.secretProvider()) ||
       jwksClient.expressJwtSecret(jwksClientOptions);
     const isRevoked = await this.isRevokedCallbackProvider();
+    const jwtAudience = (await this.audienceProvider()) || audience;
 
     // Validate JWT in Authorization Bearer header using RS256
     await new Promise((resolve, reject) => {
@@ -130,7 +135,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
         getToken: parseToken,
         isRevoked,
         secret,
-        audience, // Optionally validate the audience and the issuer
+        audience: jwtAudience, // Optionally validate the audience and the issuer
         issuer,
       })(request, response, (error: any) => {
         if (error) {
@@ -155,8 +160,6 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
    * @param {string[]} expectedScopes
    */
   private validateResourceScopes(expectedScopes: string[]) {
-    const insufficientScopeError = 'Insufficient scope';
-
     if (!Array.isArray(expectedScopes)) {
       throw new Error(
         'Parameter expectedScopes must be an array of strings representing the scopes for the endpoint(s)',
@@ -167,6 +170,11 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       if (expectedScopes.length === 0) {
         return;
       }
+
+      const insufficientScopeError = `Insufficient scope. Required scopes: ${expectedScopes.join(
+        ' ',
+      )}`;
+
       if (!req.user || typeof req.user.scope !== 'string') {
         throw new HttpErrors.Forbidden(insufficientScopeError);
       }
