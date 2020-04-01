@@ -1,3 +1,11 @@
+## [3.3.1](https://github.com/LabShare/services-auth/compare/v3.3.0...v3.3.1) (2020-04-01)
+
+
+### Bug Fixes
+
+* snyk ([3685f10](https://github.com/LabShare/services-auth/commit/3685f10))
+* snyk and LbServicesAuthComponent alias ([0d6bcd6](https://github.com/LabShare/services-auth/commit/0d6bcd6))
+
 # [3.3.0](https://github.com/LabShare/services-auth/compare/v3.2.5...v3.3.0) (2020-01-30)
 
 
