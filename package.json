@@ -50,7 +50,8 @@
     "express-jwt": "github:KalleV/express-jwt#dad0daebe354a9ad0fc8ab160e406fd5a3cac7d9",
     "jwks-rsa": "^1.5.1",
     "parse-bearer-token": "^1.0.1",
-    "tiny-json-http": "^7.1.2"
+    "tiny-json-http": "^7.1.2",
+    "snyk": "^1.316.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
@@ -70,8 +71,7 @@
     "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.19",
     "selfsigned": "^1.10.4",
-    "semantic-release": "^15.10.8",
-    "snyk": "^1.305.0"
+    "semantic-release": "^15.10.8"
   },
   "release": {
     "verifyConditions": [
@@ -88,5 +88,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "snyk": true
 }
