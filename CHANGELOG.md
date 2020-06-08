@@ -1,3 +1,11 @@
+## [2.2.4](https://github.com/LabShare/services-auth/compare/v2.2.3...v2.2.4) (2020-06-08)
+
+
+### Bug Fixes
+
+* **api:** add descriptive error for restrictRoute middleware userinfo request ([28a10ed](https://github.com/LabShare/services-auth/commit/28a10ed3f3605453699c2ef667ee0a8098426171))
+* **pkg:** support publishing releases to 2x version ([ba533bf](https://github.com/LabShare/services-auth/commit/ba533bfd312583aae22fb53c55d3a2a98b88b9c1))
+
 ## [2.1.4](https://github.com/LabShare/services-auth/compare/v2.1.3...v2.1.4) (2019-01-30)
 
 
