@@ -1,3 +1,10 @@
+## [2.2.5](https://github.com/LabShare/services-auth/compare/v2.2.4...v2.2.5) (2020-06-08)
+
+
+### Bug Fixes
+
+* **authz:** add error message to legacy audience check ([7a1b850](https://github.com/LabShare/services-auth/commit/7a1b850106905fae6395cee49887920c66f45e31))
+
 ## [2.2.4](https://github.com/LabShare/services-auth/compare/v2.2.3...v2.2.4) (2020-06-08)
 
 
