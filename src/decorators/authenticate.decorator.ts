@@ -19,6 +19,7 @@ import {
  */
 export interface AuthenticationMetadata {
   scope?: string[];
+  credentialsRequired?: boolean;
 }
 
 class AuthenticateClassDecoratorFactory extends ClassDecoratorFactory<
