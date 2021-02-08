@@ -11,7 +11,7 @@ import {
 import {AuthenticateFn, AuthenticationBindings} from '../keys';
 import * as jwksClient from 'jwks-rsa';
 import * as jwt from 'express-jwt';
-import parseToken from 'parse-bearer-token';
+import getToken from 'parse-bearer-token';
 import {CoreBindings} from '@loopback/core';
 import {get} from 'lodash';
 import {getAuthenticateMetadata} from '../decorators/authenticate.decorator';
@@ -26,6 +26,10 @@ const defaultJwksClientOptions = {
 interface ParsedParams {
   path: {[key: string]: any};
   query: {[key: string]: any};
+}
+
+interface RequestWithUser extends Request {
+  user?: {};
 }
 
 export interface IsRevokedCallback {
@@ -93,7 +97,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
    * @param request The incoming request provided by the REST layer
    * @param response The response provided by the REST layer
    */
-  async action(request: Request, response: Response): Promise<any> {
+  async action(request: RequestWithUser, response: Response): Promise<any> {
     const controller = await this.getController();
     const method = await this.getMethod();
 
@@ -128,15 +132,20 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       jwksClient.expressJwtSecret(jwksClientOptions);
     const isRevoked = await this.isRevokedCallbackProvider();
     const jwtAudience = (await this.audienceProvider()) || audience;
+    const credentialsRequired =
+      typeof metadata.credentialsRequired !== undefined
+        ? metadata.credentialsRequired
+        : true;
 
     // Validate JWT in Authorization Bearer header using RS256
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       jwt({
-        getToken: parseToken,
+        getToken,
         isRevoked,
         secret,
         audience: jwtAudience, // Optionally validate the audience and the issuer
         issuer,
+        credentialsRequired,
       })(request, response, (error: any) => {
         if (error) {
           reject(error);
@@ -145,6 +154,11 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
         resolve();
       });
     });
+
+    // If user authentication is optional on the request, avoid checking the user's scopes
+    if (!request.user && !credentialsRequired) {
+      return;
+    }
 
     const scope = [...((metadata && metadata.scope) || [])];
 
@@ -166,7 +180,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
       );
     }
 
-    return async (req: any, res: any) => {
+    return async (req: any, _res: any) => {
       if (expectedScopes.length === 0) {
         return;
       }

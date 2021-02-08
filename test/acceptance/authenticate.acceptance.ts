@@ -35,6 +35,7 @@ describe('Authentication Decorator', () => {
   let authServerPort: number;
 
   const tenant = 'ls';
+  const subject = 'abc'; // Arbitrary token subject
   const defaultAudience = 'https://my.api.id/v2';
   const certificates = selfsigned.generate(
     [
@@ -47,20 +48,27 @@ describe('Authentication Decorator', () => {
       days: 365,
     },
   );
+  const scope = {
+    shared: 'shared:scope',
+    readResources: 'read.resources',
+    readUsers: 'read.users',
+    readUsersDynamicParams: '{path.tenantId}:read:users',
+    updateUsersDynamicParams: '{path.tenantId}:update:users:{query.limit}',
+  };
 
   /**
    * Helper for creating a bearer token for RS256
    */
   function createToken(
     sub: string,
-    scope = '',
+    scopes: string[] = [],
     audience = defaultAudience,
   ): string {
     return jws.sign(
       {
         jti: 123456,
         azp: 123,
-        scope,
+        scope: scopes.join(' '),
       },
       certificates.private,
       {
@@ -102,34 +110,57 @@ describe('Authentication Decorator', () => {
           },
         },
       })
+      .withOperation('get', '/resource', {
+        'x-operation-name': 'resource',
+        responses: {
+          '200': {
+            description: '',
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      })
       .build();
 
     @authenticate({
-      scope: ['shared:scope'],
+      scope: [scope.shared],
     })
     @api(apispec)
     class MyController {
       constructor(
-        @inject(RestBindings.Http.REQUEST) public request: express.Request,
+        @inject(RestBindings.Http.REQUEST)
+        public request: express.Request & {
+          user?: {};
+        },
       ) {}
 
       @authenticate()
       async whoAmI(): Promise<any> {
-        return (this.request as any).user;
+        return this.request.user;
       }
 
       @authenticate({
-        scope: ['read:users'],
+        scope: [scope.readUsers],
       })
       async users(): Promise<string> {
         return 'all users';
       }
 
       @authenticate({
-        scope: [
-          '{path.tenantId}:read:users',
-          '{path.tenantId}:update:users:{query.limit}',
-        ],
+        scope: [scope.readResources],
+        credentialsRequired: false,
+      })
+      async resource(): Promise<string> {
+        if (this.request.user) {
+          return 'Authenticated resource';
+        }
+
+        return 'Public resource';
+      }
+
+      @authenticate({
+        scope: [scope.readUsersDynamicParams, scope.updateUsersDynamicParams],
       })
       @get('/{tenantId}/users', {
         'x-operation-name': 'users',
@@ -201,7 +232,7 @@ describe('Authentication Decorator', () => {
 
     authApp.get(
       `/auth/${tenant}/.well-known/jwks.json`,
-      (req: any, res: any) => {
+      (_req: any, res: any) => {
         res.json({
           keys: [jwk],
         });
@@ -243,16 +274,16 @@ describe('Authentication Decorator', () => {
     beforeEach(givenAuthenticatedSequence);
 
     it('authenticates successfully for correct credentials', async () => {
-      const token = createToken('abc', 'shared:scope');
+      const token = createToken(subject, [scope.shared]);
       const client = whenIMakeRequestTo(server);
       const res = await client
         .get('/whoAmI')
         .set('Authorization', 'Bearer ' + token);
-      expect(res.body.sub).to.equal('abc');
+      expect(res.body.sub).to.equal(subject);
     });
 
     it('authorizes an API with Resource Scope requirements', async () => {
-      const token = createToken('abc', 'shared:scope read:users');
+      const token = createToken(subject, [scope.shared, scope.readUsers]);
       const client = whenIMakeRequestTo(server);
       await client
         .get('/users')
@@ -261,15 +292,24 @@ describe('Authentication Decorator', () => {
     });
 
     it('authorizes an API by expanding dynamic resource scopes', async () => {
-      const token = createToken(
-        'ls:read:users',
-        'shared:scope ls:update:users:100',
-      );
+      const token = createToken(subject, [scope.shared, 'ls:update:users:100']);
       const client = whenIMakeRequestTo(server);
       await client
         .get('/ls/users?limit=100')
         .set('Authorization', 'Bearer ' + token)
         .expect(`received 100 users from tenant ls`);
+    });
+
+    it('supports optional credentials on an endpoint', async () => {
+      const token = createToken(subject, [scope.readResources, scope.shared]);
+      const client = whenIMakeRequestTo(server);
+
+      await client
+        .get('/resource')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(`Authenticated resource`);
+
+      await client.get('/resource').expect(`Public resource`);
     });
 
     it('returns an error for invalid bearer tokens', async () => {
@@ -281,7 +321,7 @@ describe('Authentication Decorator', () => {
     });
 
     it('returns an error for bearer tokens missing required scope claims', async () => {
-      const token = createToken('abc');
+      const token = createToken(subject);
       const client = whenIMakeRequestTo(server);
       await client
         .get('/users')
@@ -308,8 +348,6 @@ describe('Authentication Decorator', () => {
     const newAudience = 'https://some.new.audience';
 
     class AudienceProvider {
-      constructor() {}
-
       public async value() {
         return newAudience;
       }
@@ -334,17 +372,18 @@ describe('Authentication Decorator', () => {
     beforeEach(givenAuthenticatedSequence);
 
     it('authenticates successfully with a valid audience', async () => {
-      const token = createToken('abc', 'shared:scope', newAudience);
+      const token = createToken(subject, [scope.shared], newAudience);
       const client = whenIMakeRequestTo(server);
       const res = await client
         .get('/whoAmI')
         .set('Authorization', 'Bearer ' + token);
 
-      expect(res.body.sub).to.equal('abc');
+      expect(res.body.sub).to.equal(subject);
     });
 
     it('fails to authenticate with an audience that does not match the one returned by the provider', async () => {
-      const token = createToken('abc', 'shared:scope', 'https://not.valid.com');
+      const audience = 'https://not.valid.com';
+      const token = createToken(subject, [scope.shared], audience);
       const client = whenIMakeRequestTo(server);
       const res = await client
         .get('/whoAmI')

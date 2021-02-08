@@ -33,7 +33,7 @@ To perform additional customization of token validation, you can bind Loopback [
 
 ### Example IsRevokedCallbackProvider
 
-```
+```ts
 import request = require('request-promise');
 
 export class IsRevokedCallbackProvider {
@@ -60,7 +60,7 @@ export class IsRevokedCallbackProvider {
 
 ### Example SecretProvider
 
-```
+```ts
 import { jwk2pem } from 'pem-jwk';
 
 export class SecretProvider {
@@ -102,7 +102,7 @@ export class SecretProvider {
 
 ### Example AudienceProvider
 
-```
+```ts
 export class SecretProvider {
   constructor(
     // Constructor can inject services used to figure out which audience to use
@@ -119,7 +119,7 @@ export class SecretProvider {
 
 #### Application Bootstrap Example
 
-```
+```ts
 import { LbServicesAuthComponent } from '@labshare/lb-services-auth';
 import { SecretProvider } from 'secret.provider';
 import { AudienceProvider } from 'audience.provider';
@@ -151,7 +151,7 @@ optionally validate the bearer token's scope and audience claims. Ensure the aut
 
 #### Example
 
-```
+```ts
 import {
   AuthenticationBindings,
   AuthenticateFn
@@ -197,7 +197,7 @@ The profile corresponds to the response returned by LabShare Auth's OIDC `user_i
 
 #### Example
 
-```
+```ts
 import {
   AuthenticationBindings,
   AuthenticateFn
@@ -246,6 +246,7 @@ Use the `@authenticate` decorator for REST methods or controllers requiring auth
 | Property | Type  | Details                                                                                                    |
 | :------- | :---: | :--------------------------------------------------------------------------------------------------------- |
 | scopes   | array | A list of one zero or more arbitrary Resource Scope definitions. Example: `['read:users', 'update:users']` |
+| credentialsRequired | boolean | Set to `false` to support anonymous/public requests on an endpoint. Defaults to `true`.       |
 
 ### Dynamic Scopes
 
@@ -254,8 +255,9 @@ matching the `id` parameter in the route (for example: `'read:users:5'` if the r
 
 #### Example
 
-```
+```ts
 import { authenticate } from "@labshare/lb-services-auth";
+import { Request } from "@loopback/core";
 
 // Attach the decorator at the controller level to require authentication on all methods
 // and a scope of `my:shared:scope`
@@ -263,7 +265,9 @@ import { authenticate } from "@labshare/lb-services-auth";
   scope: 'my:shared:scope'
 })
 class MyController {
-  constructor() {}
+  constructor(
+    @inject(RestBindings.Http.REQUEST) public request: Request
+  ) {}
 
   @authenticate()
   @get('/whoAmI', {
@@ -279,6 +283,29 @@ class MyController {
   })
   async whoAmI(): Promise<string> {
     return 'authenticated data';
+  }
+
+  // This route supports both authenticated and anonymous requests
+  @authenticate({
+    credentialsRequired: false
+  })
+  @get('/resource', {
+    'x-operation-name': 'resource',
+    responses: {
+      '200': {
+        description: '',
+        schema: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async resource(): Promise<string> {
+    if (this.request.user) {
+      return 'Resource requiring authentication';
+    }
+
+    return 'Public resource';
   }
 
   // This route has an additional Resource Scope requirement. The user's bearer token will need to contain
