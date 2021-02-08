@@ -1,0 +1,51 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          # Semantic Release uses a separate Github Token for publishing
+          # See: https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/github-actions.md#pushing-packagejson-changes-to-a-master-branch
+          persist-credentials: false
+      - uses: mstachniuk/ci-skip@v1
+        # Cancels the pipeline early if [ci skip] is detected in the commit header.
+        # For example, changelog commits from the Semantic Release toolchain will generate a commit with the [ci skip] in the header.
+        with:
+          fail-fast: true
+      - name: Configure CI Github User
+        run: |
+          git config --global user.name 'LabShare'
+          git config --global user.email 'LabShare@labshare.org'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install dependencies
+        # Skip post-install scripts here, as a malicious
+        # script could steal NODE_AUTH_TOKEN.
+        run: npm i --ignore-scripts
+      - name: Build
+        # `npm rebuild` will run all those post-install scripts for us.
+        run: |
+          npm rebuild
+          npm run build
+      - name: Release
+        # Semantic release's NPM plugin first checks if there's a .npmrc file that contains an NPM Token, otherwise it generates
+        # a local file based on the "NPM_TOKEN" environment variable. Since the GH action setup node step is already creating the .npmrc file,
+        # we can simply provide the publish token to the existing .npmrc file which expects an environment variable named "NODE_AUTH_TOKEN".
+        # See: https://github.com/semantic-release/npm/blob/87e82694652ce0dee71773d39d450645f0350074/lib/set-npmrc-auth.js#L27
+        env:
+          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run semantic-release
+  
