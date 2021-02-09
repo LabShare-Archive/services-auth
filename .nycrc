@@ -1,0 +1,8 @@
+{
+  "include": ["dist"],
+  "exclude": ["test/**/*"],
+  "extension": [".js", ".ts"],
+  "reporter": ["text", "html"],
+  "exclude-after-remap": false
+}
+
