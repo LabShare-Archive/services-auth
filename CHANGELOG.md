@@ -1,3 +1,16 @@
+# [3.4.0](https://github.com/LabShare/services-auth/compare/v3.3.1...v3.4.0) (2021-02-09)
+
+
+### Bug Fixes
+
+* **gh-actions:** replace Travis with Github Actions ([e210658](https://github.com/LabShare/services-auth/commit/e21065802290449023ca1401add65265b98dbf84))
+* **pkg:** update semantic-release dev dependency versions ([16c288b](https://github.com/LabShare/services-auth/commit/16c288ba2abe2eddba13c5c060ec76e4e844bc4f))
+
+
+### Features
+
+* **authentication-decorator:** support "credentialsRequired" option ([c0e2c66](https://github.com/LabShare/services-auth/commit/c0e2c664a9b3dd53161343bb3224c8c9777b1563))
+
 ## [3.3.1](https://github.com/LabShare/services-auth/compare/v3.3.0...v3.3.1) (2020-04-01)
 
 
