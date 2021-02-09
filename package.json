@@ -58,8 +58,9 @@
     "@loopback/build": "^1.0.0",
     "@loopback/openapi-spec-builder": "^1.0.0",
     "@loopback/testlab": "^1.0.0",
-    "@semantic-release/changelog": "^3.0.4",
-    "@semantic-release/git": "^7.0.16",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/npm": "^7.0.10",
     "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/node": "^10.11.2",
@@ -70,7 +71,7 @@
     "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.19",
     "selfsigned": "^1.10.4",
-    "semantic-release": "^15.10.8",
+    "semantic-release": "^16.0.0",
     "snyk": "^1.305.0"
   },
   "release": {
