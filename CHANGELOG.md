@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/LabShare/services-auth/compare/v3.4.0...v3.4.1) (2021-02-09)
+
+
+### Bug Fixes
+
+* **ci:** resolve missing test coverage reports ([a41dff8](https://github.com/LabShare/services-auth/commit/a41dff8fd0d5762638abb493d87adee4a25cc9c7))
+
 # [3.4.0](https://github.com/LabShare/services-auth/compare/v3.3.1...v3.4.0) (2021-02-09)
 
 
