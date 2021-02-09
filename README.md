@@ -1,7 +1,5 @@
 # @labshare/services-auth
 
-[![Build Status](https://travis-ci.org/LabShare/services-auth.svg?branch=master)](https://travis-ci.org/LabShare/services-auth)
-
 # Install
 
 `npm i @labshare/services-auth`
