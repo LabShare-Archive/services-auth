@@ -48,7 +48,7 @@
     "@loopback/boot": "^1.4.4",
     "@loopback/context": "^1.20.2",
     "@loopback/core": "^1.8.5",
-    "@loopback/rest": "^1.16.3",
+    "@loopback/rest": "^1.26.1",
     "express-jwt": "github:KalleV/express-jwt#dad0daebe354a9ad0fc8ab160e406fd5a3cac7d9",
     "jwks-rsa": "^1.5.1",
     "parse-bearer-token": "^1.0.1",
