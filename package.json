@@ -50,7 +50,7 @@
     "@loopback/core": "^1.8.5",
     "@loopback/rest": "^1.16.3",
     "express-jwt": "github:KalleV/express-jwt#dad0daebe354a9ad0fc8ab160e406fd5a3cac7d9",
-    "jwks-rsa": "^1.5.1",
+    "jwks-rsa": "^1.12.2",
     "parse-bearer-token": "^1.0.1",
     "tiny-json-http": "^7.1.2"
   },
