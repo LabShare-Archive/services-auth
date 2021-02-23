@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/LabShare/services-auth/compare/v3.4.1...v3.4.2) (2021-02-23)
+
+
+### Bug Fixes
+
+* upgrade jwks-rsa from 1.5.1 to 1.12.2 ([1f34141](https://github.com/LabShare/services-auth/commit/1f341419a5bc284c6405797d192d718813cef653))
+
 ## [3.4.1](https://github.com/LabShare/services-auth/compare/v3.4.0...v3.4.1) (2021-02-09)
 
 

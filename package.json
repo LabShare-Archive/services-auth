@@ -1,6 +1,6 @@
 {
   "name": "@labshare/services-auth",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "Loopback 4 plugin for resource scope-based HTTP route authz",
   "main": "index.js",
   "scripts": {
