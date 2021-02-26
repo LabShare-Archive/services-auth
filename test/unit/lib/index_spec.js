@@ -71,7 +71,7 @@ describe('Services-Auth', () => {
     beforeEach(done => {
         app = express();
 
-        app.get('/auth/me', (req, res) => {
+        app.get(`/auth/${tenant}/me`, (req, res) => {
             const authToken = req.headers.authorization.split(' ')[1];
 
             res.json(getProfile(authToken));

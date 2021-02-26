@@ -5,13 +5,14 @@ const nock = require('nock'),
 
 describe('Auth User', () => {
 
-    const token = 'awefn9wf30qfnqpfnkqwfqpfn',
-        authUrl = 'https://a.labshare.org/_api';
+    const token = 'awefn9wf30qfnqpfnkqwfqpfn';
+    const authUrl = 'https://a.labshare.org/_api';
+    const tenant = 'my-tenant';
 
     let request;
 
     beforeEach(() => {
-        request = nock('https://a.labshare.org').get('/_api/auth/me');
+        request = nock('https://a.labshare.org').get(`/_api/auth/${tenant}/me`);
     });
 
     afterEach(() => {
@@ -20,12 +21,15 @@ describe('Auth User', () => {
 
     it('throws with invalid arguments', () => {
         expect(() => {
-            authUser({authUrl: null});
+            authUser({authUrl: null, tenant});
+        }).toThrow();
+        expect(() => {
+            authUser({authUrl, tenant: null});
         }).toThrow();
     });
 
     it('fails if the token is missing or empty', done => {
-        authUser({authUrl})({authToken: ''}, error => {
+        authUser({authUrl, tenant})({authToken: ''}, error => {
             expect(error.message).toMatch(/token is required/i);
             done();
         });
@@ -42,7 +46,7 @@ describe('Auth User', () => {
             return userData;
         });
 
-        authUser({authUrl})({authToken: token}, (error, data) => {
+        authUser({authUrl, tenant})({authToken: token}, (error, data) => {
             expect(error).toBeNull();
             expect(data).toEqual(userData);
             done();
@@ -57,7 +61,7 @@ describe('Auth User', () => {
 
         request.reply(200, userData);
 
-        authUser({authUrl})({authToken: token}, (error, data) => {
+        authUser({authUrl, tenant})({authToken: token}, (error, data) => {
             expect(error.message).toContain('invalid');
             expect(data).toBeUndefined();
             done();
@@ -67,7 +71,7 @@ describe('Auth User', () => {
     it('fails if the response status is not 200', done => {
         request.reply(500, {});
 
-        authUser({authUrl})({authToken: token}, (error, data) => {
+        authUser({authUrl, tenant})({authToken: token}, (error, data) => {
             expect(error).toBe(500);
             expect(data).toBeUndefined();
             done();
