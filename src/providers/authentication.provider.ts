@@ -10,7 +10,7 @@ import {
 } from '@loopback/rest';
 import {AuthenticateFn, AuthenticationBindings} from '../keys';
 import * as jwksClient from 'jwks-rsa';
-import * as jwt from 'express-jwt';
+import * as jwt from '@labshare/express-jwt';
 import getToken from 'parse-bearer-token';
 import {CoreBindings} from '@loopback/core';
 import {get} from 'lodash';
@@ -22,6 +22,8 @@ const defaultJwksClientOptions = {
   rateLimit: true, // See: https://github.com/auth0/node-jwks-rsa#rate-limiting
   jwksRequestsPerMinute: 10,
 };
+
+const defaultAlgorithms = ['HS256', 'RS256'];
 
 interface ParsedParams {
   path: {[key: string]: any};
@@ -146,6 +148,7 @@ export class AuthenticateActionProvider implements Provider<AuthenticateFn> {
         audience: jwtAudience, // Optionally validate the audience and the issuer
         issuer,
         credentialsRequired,
+        algorithms: defaultAlgorithms,
       })(request, response, (error: any) => {
         if (error) {
           reject(error);
