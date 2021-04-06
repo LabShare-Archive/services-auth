@@ -1,3 +1,10 @@
+## [3.4.3](https://github.com/LabShare/services-auth/compare/v3.4.2...v3.4.3) (2021-04-06)
+
+
+### Bug Fixes
+
+* **pkg:** install express-jwt from @labshare/express-jwt ([37462b6](https://github.com/LabShare/services-auth/commit/37462b6538980bd18755735f8f50da9407ce75ed))
+
 ## [3.4.2](https://github.com/LabShare/services-auth/compare/v3.4.1...v3.4.2) (2021-02-23)
 
 
