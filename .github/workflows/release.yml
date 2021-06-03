@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - 2x
 jobs:
   release:
     name: Release
@@ -43,7 +44,7 @@ jobs:
         # Semantic release's NPM plugin generates a local .npmrc file based on the "NPM_TOKEN" environment variable.
         # See: https://github.com/semantic-release/npm/blob/87e82694652ce0dee71773d39d450645f0350074/lib/set-npmrc-auth.js#L27
         env:
-          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm run semantic-release
   
