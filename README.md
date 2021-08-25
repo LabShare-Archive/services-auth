@@ -1,3 +1,9 @@
+# _NOTE: This project has been moved to the @labshare/base-api repository_
+
+See: https://github.com/LabShare/base-api/tree/master/packages/services-auth
+___
+___
+
 # @labshare/services-auth
 
 # Install
