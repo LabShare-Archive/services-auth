@@ -7,7 +7,6 @@
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "test": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
     "coverage": "istanbul cover jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
-    "travis-deploy-once": "travis-deploy-once --pro",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -40,6 +39,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
+    "@labshare/semantic-release-config": "^1.0.0",
     "@labshare/services": "^3.0.0",
     "cookie-parser": "^1.4.3",
     "coveralls": "^3.0.1",
@@ -51,11 +51,9 @@
     "pem-jwk": "^1.5.1",
     "portfinder": "^1.0.12",
     "selfsigned": "^1.10.2",
+    "semantic-release": "^15.5.2",
     "socket.io-client": "^2.1.1",
-    "supertest": "^3.1.0",
-    "@labshare/semantic-release-config": "^1.0.0",
-    "travis-deploy-once": "^5.0.0",
-    "semantic-release": "^15.5.2"
+    "supertest": "^3.1.0"
   },
   "release": {
     "extends": "@labshare/semantic-release-config",
